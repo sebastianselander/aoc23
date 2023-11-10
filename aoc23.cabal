@@ -27,6 +27,7 @@ executable aoc23
         search-algorithms,
         unordered-containers,
         vector,
+        time,
 
     hs-source-dirs:   src
 
