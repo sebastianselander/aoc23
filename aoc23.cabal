@@ -28,6 +28,7 @@ executable aoc23
         unordered-containers,
         vector,
         time,
+        directory,
 
     hs-source-dirs:   src
 
