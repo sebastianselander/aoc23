@@ -20,16 +20,26 @@ mains =
                     (25 - length impls)
                     (putStrLn . const "Not yet implemented")
 
+inputFilePrefix :: FilePath
+inputFilePrefix = "day"
+
+inputDir :: FilePath
+inputDir = "inputs/"
+
 main :: IO ()
 main = do
     args <- getArgs
     (_, _, currentDay) <-  toGregorian . utctDay <$> getCurrentTime
     case args of
+        [] -> parseFile (inputDir ++ inputFilePrefix ++ show currentDay) >>= execute currentDay mains
         [input] -> parseFile input >>= execute currentDay mains
         [input, day] -> do
             input <- parseFile input
             dayNumber <- case parseDay day of
-                Nothing -> errExit $ "Could not parse day " ++ quote day ++ " as an integer in the range [1 .. 25]"
+                Nothing -> errExit $ unwords [
+                    "Could not parse day",
+                    quote day,
+                    "as an integer in the range [1 .. 25]"]
                 Just n  -> pure n
             execute dayNumber mains input
         xs -> errExit $ concat

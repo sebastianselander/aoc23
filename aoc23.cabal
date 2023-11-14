@@ -21,7 +21,6 @@ executable aoc23
         algebraic-graphs,
         containers,
         extra,
-        hmatrix,
         mtl,
         parsec,
         search-algorithms,
