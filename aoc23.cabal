@@ -28,6 +28,7 @@ executable aoc23
         vector,
         time,
         directory,
+        template-haskell,
 
     hs-source-dirs:   src
 
