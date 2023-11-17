@@ -15,7 +15,9 @@ executable aoc23
 
     main-is:          Main.hs
 
-    -- other-modules:
+    other-modules:
+        Utils,
+
     build-depends:
         base >= 4.16,
         algebraic-graphs,
@@ -28,7 +30,7 @@ executable aoc23
         vector,
         time,
         directory,
-        template-haskell,
+        QuickCheck,
 
     hs-source-dirs:   src
 
