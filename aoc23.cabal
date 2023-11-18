@@ -31,6 +31,7 @@ executable aoc23
         time,
         directory,
         QuickCheck,
+        memoize,
 
     hs-source-dirs:   src
 

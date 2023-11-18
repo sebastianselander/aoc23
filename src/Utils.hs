@@ -1,11 +1,42 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Utils (Rect (..), overlap) where
+module Utils
+  ( Rect (..),
+    overlap,
+    module Data.List.Extra,
+    module Data.Function.Memoize,
+    module Data.Bifunctor,
+    module Data.Foldable,
+    module Data.Traversable,
+    module Data.Void,
+    module Data.Maybe,
+    module Data.Bool,
+    module Control.Applicative,
+    module Control.Monad,
+    module Data.Functor,
+    module Data.Char,
+    opPairs,
+    both,
+    manhattan,
+    onAllOther,
+  )
+where
 
+import Control.Applicative
+import Control.Monad
+import Data.Bifunctor
+import Data.Bool
+import Data.Char
 import Data.Foldable
-import Data.Sequence (Seq (..), (><))
+import Data.Traversable
+import Data.Function.Memoize
+import Data.Functor
+import Data.List.Extra
+import Data.Maybe
+import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
+import Data.Void
 import Test.QuickCheck (Arbitrary (arbitrary), Gen)
 
 {-
@@ -33,14 +64,8 @@ data Rect = Rect
   }
   deriving (Show)
 
-instance Arbitrary Rect where
-  arbitrary :: Gen Rect
-  arbitrary =
-    Rect
-      <$> fmap abs arbitrary
-      <*> fmap abs arbitrary
-      <*> fmap abs arbitrary
-      <*> fmap abs arbitrary
+opPairs :: (a -> b -> c) -> (a, a) -> (b, b) -> (c, c)
+opPairs f (a, aa) (b, bb) = (f a b, f aa bb)
 
 overlap :: Rect -> Rect -> Bool
 overlap rect1 rect2 =
@@ -50,13 +75,11 @@ overlap rect1 rect2 =
       || rect1.yCoord + rect1.extendY < rect2.yCoord
         && rect1.yCoord > rect2.yCoord + rect2.extendY
 
--- Tests
+both :: (Bifunctor f) => (a -> b) -> f a a -> f b b
+both f = bimap f f
 
-prop_overlapIdentity :: Rect -> Bool
-prop_overlapIdentity r1 = overlap r1 r1
-
-prop_overlapComm :: Rect -> Rect -> Bool
-prop_overlapComm r1 r2 = overlap r1 r2 == overlap r2 r1
+manhattan :: (Int, Int) -> (Int, Int) -> Int
+manhattan (x, y) (xx, yy) = abs (xx - x) + abs (yy - y)
 
 onAllOther :: forall a b. (a -> a -> b) -> [a] -> [[b]]
 onAllOther f xs =
@@ -71,3 +94,20 @@ onAllOther f xs =
     go' index e Seq.Empty = Seq.Empty
     go' 0 e (x :<| xs) = go' (-1) e xs
     go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
+
+-- Tests
+
+instance Arbitrary Rect where
+  arbitrary :: Gen Rect
+  arbitrary =
+    Rect
+      <$> fmap abs arbitrary
+      <*> fmap abs arbitrary
+      <*> fmap abs arbitrary
+      <*> fmap abs arbitrary
+
+prop_overlapIdentity :: Rect -> Bool
+prop_overlapIdentity r1 = overlap r1 r1
+
+prop_overlapComm :: Rect -> Rect -> Bool
+prop_overlapComm r1 r2 = overlap r1 r2 == overlap r2 r1
