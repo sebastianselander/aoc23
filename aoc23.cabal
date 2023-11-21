@@ -17,6 +17,7 @@ executable aoc23
 
     other-modules:
         Utils,
+        Solutions.Day1
 
     build-depends:
         base >= 4.16,
@@ -32,6 +33,7 @@ executable aoc23
         directory,
         QuickCheck,
         memoize,
+        ansi-terminal,
 
     hs-source-dirs:   src
 

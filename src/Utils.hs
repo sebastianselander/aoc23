@@ -20,6 +20,7 @@ module Utils
     both,
     manhattan,
     onAllOther,
+    todo,
   )
 where
 
@@ -94,6 +95,9 @@ onAllOther f xs =
     go' index e Seq.Empty = Seq.Empty
     go' 0 e (x :<| xs) = go' (-1) e xs
     go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
+
+todo :: a
+todo = error "TODO"
 
 -- Tests
 
