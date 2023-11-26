@@ -6,6 +6,7 @@ module Utils
     overlap,
     module Data.List.Extra,
     module Data.Function.Memoize,
+    module Data.Functor,
     module Data.Bifunctor,
     module Data.Foldable,
     module Data.Traversable,
@@ -14,8 +15,8 @@ module Utils
     module Data.Bool,
     module Control.Applicative,
     module Control.Monad,
-    module Data.Functor,
     module Data.Char,
+    module Debug.Trace,
     Parser,
     opPairs,
     both,
@@ -39,6 +40,7 @@ import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
 import Data.Traversable
 import Data.Void
+import Debug.Trace
 import Text.Megaparsec (Parsec)
 
 type Parser = Parsec Void String
@@ -91,11 +93,11 @@ onAllOther f xs =
    in toList (toList <$> go 0 seq seq)
   where
     go :: Int -> Seq a -> Seq a -> Seq (Seq b)
-    go _ _ Seq.Empty   = Seq.Empty
+    go _ _ Seq.Empty = Seq.Empty
     go n ys (x :<| xs) = go' n x ys :<| go (n + 1) ys xs
 
     go' :: Int -> a -> Seq a -> Seq b
-    go' _ _ Seq.Empty  = Seq.Empty
+    go' _ _ Seq.Empty = Seq.Empty
     go' 0 e (_ :<| xs) = go' (-1) e xs
     go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
 
