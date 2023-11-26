@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 module Utils
   ( Rect (..),
@@ -16,6 +16,7 @@ module Utils
     module Control.Monad,
     module Data.Functor,
     module Data.Char,
+    Parser,
     opPairs,
     both,
     manhattan,
@@ -24,6 +25,7 @@ module Utils
   )
 where
 
+import Text.Megaparsec (Parsec)
 import Control.Applicative
 import Control.Monad
 import Data.Bifunctor
@@ -39,6 +41,8 @@ import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
 import Data.Void
 import Test.QuickCheck (Arbitrary (arbitrary), Gen)
+
+type Parser = Parsec Void String
 
 {-
 ..........
@@ -93,7 +97,7 @@ onAllOther f xs =
 
     go' :: Int -> a -> Seq a -> Seq b
     go' index e Seq.Empty = Seq.Empty
-    go' 0 e (x :<| xs) = go' (-1) e xs
+    go' 0 e (_ :<| xs) = go' (-1) e xs
     go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
 
 todo :: a

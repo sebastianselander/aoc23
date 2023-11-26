@@ -25,7 +25,6 @@ executable aoc23
         containers,
         extra,
         mtl,
-        parsec,
         search-algorithms,
         unordered-containers,
         vector,
@@ -34,6 +33,7 @@ executable aoc23
         QuickCheck,
         memoize,
         ansi-terminal,
+        megaparsec,
 
     hs-source-dirs:   src
 
