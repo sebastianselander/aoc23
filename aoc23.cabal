@@ -17,7 +17,6 @@ executable aoc23
 
     other-modules:
         Utils,
-        Solutions.Day1
 
     build-depends:
         base >= 4.16,
@@ -30,7 +29,6 @@ executable aoc23
         vector,
         time,
         directory,
-        QuickCheck,
         memoize,
         ansi-terminal,
         megaparsec,

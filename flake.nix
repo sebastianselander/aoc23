@@ -25,13 +25,11 @@
           default =
             pkgs.mkShell {
               nativeBuildInputs = [
-                pkgs.blas
                 pkgs.ghc
                 pkgs.haskell-language-server
                 pkgs.haskellPackages.cabal-install
                 pkgs.haskellPackages.fourmolu
                 pkgs.haskellPackages.ghcid
-                pkgs.lapack
                 pkgs.zlib
               ];
             };

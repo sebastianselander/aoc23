@@ -25,22 +25,21 @@ module Utils
   )
 where
 
-import Text.Megaparsec (Parsec)
 import Control.Applicative
 import Control.Monad
 import Data.Bifunctor
 import Data.Bool
 import Data.Char
 import Data.Foldable
-import Data.Traversable
 import Data.Function.Memoize
 import Data.Functor
 import Data.List.Extra
 import Data.Maybe
 import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
+import Data.Traversable
 import Data.Void
-import Test.QuickCheck (Arbitrary (arbitrary), Gen)
+import Text.Megaparsec (Parsec)
 
 type Parser = Parsec Void String
 
@@ -92,30 +91,13 @@ onAllOther f xs =
    in toList (toList <$> go 0 seq seq)
   where
     go :: Int -> Seq a -> Seq a -> Seq (Seq b)
-    go _ ys Seq.Empty = Seq.Empty
+    go _ _ Seq.Empty   = Seq.Empty
     go n ys (x :<| xs) = go' n x ys :<| go (n + 1) ys xs
 
     go' :: Int -> a -> Seq a -> Seq b
-    go' index e Seq.Empty = Seq.Empty
+    go' _ _ Seq.Empty  = Seq.Empty
     go' 0 e (_ :<| xs) = go' (-1) e xs
     go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
 
 todo :: a
 todo = error "TODO"
-
--- Tests
-
-instance Arbitrary Rect where
-  arbitrary :: Gen Rect
-  arbitrary =
-    Rect
-      <$> fmap abs arbitrary
-      <*> fmap abs arbitrary
-      <*> fmap abs arbitrary
-      <*> fmap abs arbitrary
-
-prop_overlapIdentity :: Rect -> Bool
-prop_overlapIdentity r1 = overlap r1 r1
-
-prop_overlapComm :: Rect -> Rect -> Bool
-prop_overlapComm r1 r2 = overlap r1 r2 == overlap r2 r1

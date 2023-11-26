@@ -1,6 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 {-# HLINT ignore "Avoid lambda" #-}
 
 module Main where
@@ -13,12 +14,11 @@ import System.Environment
 import System.Exit
 import System.IO
 import Text.Read
-import Utils
 
 type AOC = (Int, String -> String, String -> String)
 
 mains :: [AOC]
-mains = [(21, ("1" ++), \x -> "2" ++ x)]
+mains = []
 
 inputFilePrefix :: FilePath
 inputFilePrefix = "day"
@@ -54,8 +54,8 @@ titleBar n = replicate n '='
 data Part = Part1 | Part2
 
 instance Show Part where
-    show Part1 = "1"
-    show Part2 = "2"
+  show Part1 = "1"
+  show Part2 = "2"
 
 main :: IO ()
 main = do
@@ -65,64 +65,24 @@ main = do
   prettyDate year month day
   case args of
     [inputDay] -> do
-      dayNumber <- case parseDay inputDay of
-        Nothing ->
-          errExit $
-            unwords
-              [ "Could not parse day",
-                quote inputDay,
-                "as an integer in the range [1 .. 25]"
-              ]
-        Just n -> pure n
+      dayNumber <- parseDay inputDay
       f1 <- execute dayNumber Part1 mains
       f2 <- execute dayNumber Part2 mains
       input <- parseFile (inputDir ++ inputFilePrefix ++ inputDay)
       putStrLn $ "Part1: " ++ f1 input
       putStrLn $ "Part2: " ++ f2 input
     [inputDay, inputPart] -> do
-        dayNumber <- case parseDay inputDay of
-          Nothing ->
-            errExit $
-              unwords
-                [ "Could not parse day",
-                  quote inputDay,
-                  "as an integer in the range [1 .. 25]"
-                ]
-          Just n -> pure n
-        partNumber <- case parsePart inputPart of
-            Nothing ->
-              errExit $
-                unwords
-                  [ "Could not parse day",
-                    quote inputDay,
-                    "as an integer in the range [1 .. 25]"
-                  ]
-            Just n -> pure n
-        input <- parseFile (inputDir ++ inputFilePrefix ++ inputDay)
-        f <- execute dayNumber partNumber mains
-        putStrLn $ "Part" ++ show partNumber ++ ": " ++ f input
+      dayNumber <- parseDay inputDay
+      partNumber <- parsePart inputPart
+      input <- parseFile (inputDir ++ inputFilePrefix ++ inputDay)
+      f <- execute dayNumber partNumber mains
+      putStrLn $ "Part" ++ show partNumber ++ ": " ++ f input
     [inputDay, inputPart, inputFile] -> do
-        dayNumber <- case parseDay inputDay of
-          Nothing ->
-            errExit $
-              unwords
-                [ "Could not parse day",
-                  quote inputDay,
-                  "as an integer in the range [1 .. 25]"
-                ]
-          Just n -> pure n
-        partNumber <- case parsePart inputPart of
-            Nothing ->
-              errExit $
-                unwords
-                  [ "Could not parse day",
-                    quote inputDay,
-                    "as an integer in the range [1 .. 25]"
-                  ]
-            Just n -> pure n
-        input <- parseFile inputFile
-        f <- execute dayNumber partNumber mains
-        putStrLn $ "Part" ++ show partNumber ++ ": " ++ f input
+      dayNumber <- parseDay inputDay
+      partNumber <- parsePart inputPart
+      input <- parseFile inputFile
+      f <- execute dayNumber partNumber mains
+      putStrLn $ "Part" ++ show partNumber ++ ": " ++ f input
     xs ->
       errExit $
         concat
@@ -139,12 +99,12 @@ main = do
 
 execute :: Int -> Part -> [AOC] -> IO (String -> String)
 execute n part fs = do
-    let f = case part of
-            Part1 -> (\(a,b,_) -> (a,b))
-            Part2 -> (\(a,_,c) -> (a,c))
-    case lookup n (map f fs) of
-      Just f -> pure f
-      Nothing -> errExit $ "Program for day " ++ quote (show n) ++ " does not exist"
+  let f = case part of
+        Part1 -> (\(a, b, _) -> (a, b))
+        Part2 -> (\(a, _, c) -> (a, c))
+  case lookup n (map f fs) of
+    Just f -> pure f
+    Nothing -> errExit $ "Program for day " ++ quote (show n) ++ " does not exist"
 
 parseFile :: String -> IO String
 parseFile inputFile =
@@ -154,18 +114,30 @@ parseFile inputFile =
         >> exitFailure
     True -> readFile inputFile
 
-parseDay :: String -> Maybe Int
+parseDay :: String -> IO Int
 parseDay day
   | Just n <- readMaybe @Int day,
     n >= 1 && n <= 25 =
-      Just n
-  | otherwise = Nothing
+      pure n
+  | otherwise =
+      errExit $
+        unwords
+          [ "Could not parse day",
+            quote day,
+            "as an integer in the range [1 .. 25]"
+          ]
 
-parsePart :: String -> Maybe Part
-parsePart day
-  | Just 1 <- readMaybe @Int day = pure Part1
-  | Just 2 <- readMaybe @Int day = pure Part2
-  | otherwise = Nothing
+parsePart :: String -> IO Part
+parsePart part
+  | Just 1 <- readMaybe @Int part = pure Part1
+  | Just 2 <- readMaybe @Int part = pure Part2
+  | otherwise = do
+      errExit $
+        unwords
+          [ "Could not parse part",
+            quote part,
+            "as an integer in the range [1 .. 2]"
+          ]
 
 errExit :: String -> IO a
 errExit str = hPutStrLn stderr str >> exitFailure
