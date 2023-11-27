@@ -9,7 +9,7 @@ import System.Exit
 import System.IO
 import Text.Read
 
-type AOC = (Int, String -> String, String -> String)
+data AOC = Aoc { day :: Int, part1 :: String -> String, part2 :: String -> String}
 
 mains :: [AOC]
 mains = []
@@ -91,14 +91,19 @@ main = do
             quote "cabal run aoc23 -- <DAY>"
           ]
 
+
 execute :: Int -> Part -> [AOC] -> IO (String -> String)
-execute n part fs = do
-  let f = case part of
-        Part1 -> (\(a, b, _) -> (a, b))
-        Part2 -> (\(a, _, c) -> (a, c))
-  case lookup n (map f fs) of
-    Just g -> pure g
-    Nothing -> errExit $ "Program for day " ++ quote (show n) ++ " does not exist"
+execute n part xs = do
+    aoc <- find n xs
+    case part of
+        Part1 -> pure $ part1 aoc
+        Part2 -> pure $ part2 aoc
+  where
+    find :: Int -> [AOC] -> IO AOC
+    find _ [] = errExit $ "Program for day " ++ quote (show n) ++ " does not exist"
+    find m (y:ys)
+      | m == day y = pure y
+      | otherwise = find m ys
 
 parseFile :: String -> IO String
 parseFile inputFile =
