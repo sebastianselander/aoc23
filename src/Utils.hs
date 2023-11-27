@@ -15,6 +15,7 @@ module Utils
     module Data.Bool,
     module Control.Applicative,
     module Control.Monad,
+    module Control.DeepSeq,
     module Data.Char,
     module Debug.Trace,
     Parser,
@@ -22,11 +23,13 @@ module Utils
     both,
     manhattan,
     onAllOther,
+    applyN,
     todo,
   )
 where
 
 import Control.Applicative
+import Control.DeepSeq
 import Control.Monad
 import Data.Bifunctor
 import Data.Bool
@@ -43,7 +46,7 @@ import Data.Void
 import Debug.Trace
 import Text.Megaparsec (Parsec)
 
-type Parser = Parsec Void String
+type Parser a = Parsec Void String a
 
 {-
 ..........
@@ -70,6 +73,12 @@ data Rect = Rect
   }
   deriving (Show)
 
+applyN :: Int -> (a -> a) -> a -> a
+applyN n f x = go x n f x
+  where
+    go acc 0 _ _ = acc
+    go !acc n f x = go (f acc) (n - 1) f x
+
 opPairs :: (a -> b -> c) -> (a, a) -> (b, b) -> (c, c)
 opPairs f (a, aa) (b, bb) = (f a b, f aa bb)
 
@@ -87,7 +96,7 @@ both f = bimap f f
 manhattan :: (Int, Int) -> (Int, Int) -> Int
 manhattan (x, y) (xx, yy) = abs (xx - x) + abs (yy - y)
 
-onAllOther :: forall a b. (a -> a -> b) -> [a] -> [[b]]
+onAllOther :: forall a b . (a -> a -> b) -> [a] -> [[b]]
 onAllOther f xs =
   let seq = Seq.fromList xs
    in toList (toList <$> go 0 seq seq)

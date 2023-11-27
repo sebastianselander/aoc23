@@ -32,6 +32,7 @@ executable aoc23
         memoize,
         ansi-terminal,
         megaparsec,
+        deepseq,
 
     hs-source-dirs:   src
 

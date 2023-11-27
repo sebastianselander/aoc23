@@ -30,6 +30,7 @@
                 pkgs.haskellPackages.cabal-install
                 pkgs.haskellPackages.fourmolu
                 pkgs.haskellPackages.ghcid
+                pkgs.haskellPackages.hoogle
                 pkgs.zlib
               ];
             };
