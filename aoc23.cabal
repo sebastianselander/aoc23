@@ -1,39 +1,42 @@
-cabal-version:      3.0
-name:               aoc23
-version:            0.1.0.0
-license:            MIT
-license-file:       LICENSE
-author:             sebastianselander
-build-type:         Simple
-extra-doc-files:    CHANGELOG.md
+cabal-version:   3.0
+name:            aoc23
+version:         0.1.0.0
+license:         MIT
+license-file:    LICENSE
+author:          sebastianselander
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
 
 common warnings
-    ghc-options: -Wall
+  ghc-options: -Wall -Wextra
+
+common extensions
+  default-extensions:
+    ImplicitParams
+    LambdaCase
+    OverloadedRecordDot
+    TypeApplications
 
 executable aoc23
-    import:           warnings
+  import:           warnings, extensions
+  main-is:          Main.hs
+  other-modules:    Utils
+  build-depends:
+    , algebraic-graphs
+    , ansi-terminal
+    , base                  >=4.16
+    , containers
+    , deepseq
+    , directory
+    , extra
+    , megaparsec
+    , memoize
+    , mtl
+    , search-algorithms
+    , time
+    , unordered-containers
+    , vector
+    , pretty-simple
 
-    main-is:          Main.hs
-
-    other-modules:
-        Utils,
-
-    build-depends:
-        base >= 4.16,
-        algebraic-graphs,
-        containers,
-        extra,
-        mtl,
-        search-algorithms,
-        unordered-containers,
-        vector,
-        time,
-        directory,
-        memoize,
-        ansi-terminal,
-        megaparsec,
-        deepseq,
-
-    hs-source-dirs:   src
-
-    default-language: GHC2021
+  hs-source-dirs:   src
+  default-language: GHC2021

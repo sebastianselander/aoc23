@@ -17,6 +17,7 @@ module Utils
     module Control.Monad,
     module Control.DeepSeq,
     module Data.Char,
+    module Text.Pretty.Simple,
     module Debug.Trace,
     Parser,
     opPairs,
@@ -45,6 +46,7 @@ import Data.Traversable
 import Data.Void
 import Debug.Trace
 import Text.Megaparsec (Parsec)
+import Text.Pretty.Simple
 
 type Parser a = Parsec Void String a
 
@@ -96,7 +98,7 @@ both f = bimap f f
 manhattan :: (Int, Int) -> (Int, Int) -> Int
 manhattan (x, y) (xx, yy) = abs (xx - x) + abs (yy - y)
 
-onAllOther :: forall a b . (a -> a -> b) -> [a] -> [[b]]
+onAllOther :: forall a b. (a -> a -> b) -> [a] -> [[b]]
 onAllOther f xs =
   let seq = Seq.fromList xs
    in toList (toList <$> go 0 seq seq)

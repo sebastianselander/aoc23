@@ -1,9 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
-{-# OPTIONS_GHC -Wno-name-shadowing #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
-{-# HLINT ignore "Avoid lambda" #-}
-
 module Main where
 
 import Data.Time.Calendar
@@ -103,7 +97,7 @@ execute n part fs = do
         Part1 -> (\(a, b, _) -> (a, b))
         Part2 -> (\(a, _, c) -> (a, c))
   case lookup n (map f fs) of
-    Just f -> pure f
+    Just g -> pure g
     Nothing -> errExit $ "Program for day " ++ quote (show n) ++ " does not exist"
 
 parseFile :: String -> IO String
