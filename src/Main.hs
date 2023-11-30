@@ -8,46 +8,46 @@ import System.Environment
 import System.Exit
 import System.IO
 import Text.Read
+import Data.Text (Text)
+import Data.Text.IO qualified as Text
+import Data.Text qualified as Text hiding (concat)
+import Utils (AOC(..))
 
-data AOC = Aoc
-    { day :: Int
-    , part1 :: String -> String
-    , part2 :: String -> String
-    }
+import Solutions.Day1 qualified as Day1
 
 mains :: [AOC]
-mains = []
+mains = [ Day1.solve ]
 
-inputFilePrefix :: FilePath
+inputFilePrefix :: String
 inputFilePrefix = "day"
 
 inputDir :: FilePath
 inputDir = "inputs/"
 
-makeISO :: Year -> MonthOfYear -> DayOfMonth -> String
-makeISO year month day = concat [show year, "-", show month, "-", show day]
+makeISO :: Year -> MonthOfYear -> DayOfMonth -> Text
+makeISO year month day = Text.pack (show year) <> "-" <> Text.pack (show month) <> "-" <> Text.pack (show day)
 
 clean :: IO ()
 clean = setCursorPosition 0 0 >> clearScreen
 
 prettyDate :: Year -> MonthOfYear -> DayOfMonth -> IO ()
 prettyDate y m d = do
-    let today = "Today's date: "
+    let today :: Text = "Today's date: "
     let date = makeISO y m d
-    putStr today
+    Text.putStr today
     setSGR [SetItalicized True]
-    putStrLn date
+    Text.putStrLn date
     setSGR [Reset]
     setSGR
         [ SetConsoleIntensity BoldIntensity
         , SetColor Foreground Dull Green
         ]
-    putStrLn $ titleBar (length today + length date)
+    Text.putStrLn $ titleBar (Text.length today + Text.length date)
     setSGR [Reset]
     hFlush stdout
 
-titleBar :: Int -> String
-titleBar n = replicate n '='
+titleBar :: Int -> Text
+titleBar n = Text.replicate n "="
 
 data Part = Part1 | Part2
 
@@ -61,26 +61,30 @@ main = do
     args <- getArgs
     (year, month, day) <- toGregorian . utctDay <$> getCurrentTime
     prettyDate year month day
+    pre <- getCurrentTime
     case args of
         [inputDay] -> do
             dayNumber <- parseDay inputDay
             f1 <- execute dayNumber Part1 mains
             f2 <- execute dayNumber Part2 mains
-            input <- parseFile (inputDir ++ inputFilePrefix ++ inputDay)
-            putStrLn $ "Part1: " ++ f1 input
-            putStrLn $ "Part2: " ++ f2 input
+            input <- parseFile (inputDir <> inputFilePrefix <> inputDay)
+            Text.putStrLn $ "Part1: " <> f1 (Text.pack input)
+            Text.putStrLn $ "Part2: " <> f2 (Text.pack input)
+            timePost pre
         [inputDay, inputPart] -> do
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
-            input <- parseFile (inputDir ++ inputFilePrefix ++ inputDay)
+            input <- parseFile (inputDir <> inputFilePrefix <> inputDay)
             f <- execute dayNumber partNumber mains
-            putStrLn $ "Part" ++ show partNumber ++ ": " ++ f input
+            Text.putStrLn $ "Part" <> Text.pack (show partNumber) <> ": " <> f (Text.pack input)
+            timePost pre
         [inputDay, inputPart, inputFile] -> do
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
             input <- parseFile inputFile
             f <- execute dayNumber partNumber mains
-            putStrLn $ "Part" ++ show partNumber ++ ": " ++ f input
+            Text.putStrLn $ "Part" <> Text.pack (show partNumber) <> ": " <> f (Text.pack input)
+            timePost pre
         xs ->
             errExit $
                 concat
@@ -95,7 +99,13 @@ main = do
                     , quote "cabal run aoc23 -- <DAY>"
                     ]
 
-execute :: Int -> Part -> [AOC] -> IO (String -> String)
+timePost :: UTCTime -> IO ()
+timePost pre = do
+    post <- getCurrentTime
+    let diff = diffUTCTime post pre
+    putStrLn $ "\nTook " <> show diff
+
+execute :: Int -> Part -> [AOC] -> IO (Text -> Text)
 execute n part xs = do
     aoc <- find n xs
     case part of
@@ -104,7 +114,7 @@ execute n part xs = do
   where
     find :: Int -> [AOC] -> IO AOC
     find _ [] =
-        errExit $ "Program for day " ++ quote (show n) ++ " does not exist"
+        errExit $ "Program for day " <> quote (show n) <> " does not exist"
     find m (y : ys)
         | m == day y = pure y
         | otherwise = find m ys
@@ -115,7 +125,7 @@ parseFile inputFile =
         False ->
             hPutStrLn
                 stderr
-                ("The file " ++ quote inputFile ++ " does not exist")
+                ("The file " <> quote inputFile <> " does not exist")
                 >> exitFailure
         True -> readFile inputFile
 

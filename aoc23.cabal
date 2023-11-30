@@ -15,28 +15,34 @@ common extensions
     ImplicitParams
     LambdaCase
     OverloadedRecordDot
+    OverloadedStrings
     TypeApplications
 
 executable aoc23
   import:           warnings, extensions
   main-is:          Main.hs
-  other-modules:    Utils
+  other-modules:
+    Utils
+    Solutions.Day1
   build-depends:
     , algebraic-graphs
     , ansi-terminal
+    , attoparsec
     , base                  >=4.16
     , containers
     , deepseq
     , directory
     , extra
-    , megaparsec
     , memoize
     , mtl
+    , pretty-simple
     , search-algorithms
+    , text
+    , text-show
     , time
     , unordered-containers
     , vector
-    , pretty-simple
+    , parser-combinators
 
   hs-source-dirs:   src
   default-language: GHC2021
