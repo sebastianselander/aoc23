@@ -22,7 +22,7 @@ executable aoc23
   import:           warnings, extensions
   main-is:          Main.hs
   other-modules:
-    Utils
+    Lude
     Solutions.Day1
   build-depends:
     , algebraic-graphs

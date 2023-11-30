@@ -1,26 +1,10 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 
-module Utils (
+module Lude (
     Rect (..),
     overlap,
-    module Data.List.Extra,
-    module Data.Function.Memoize,
-    module Data.Functor,
-    module Data.Bifunctor,
-    module Data.Foldable,
-    module Data.Traversable,
-    module Data.Void,
-    module Data.Maybe,
-    module Data.Bool,
-    module Control.Applicative,
-    module Control.Monad,
-    module Control.DeepSeq,
-    module Data.Char,
-    module Text.Pretty.Simple,
-    module Debug.Trace,
-    Parser,
-    AOC(..),
+    AOC (..),
     opPairs,
     both,
     manhattan,
@@ -30,24 +14,10 @@ module Utils (
 )
 where
 
-import Control.Applicative
-import Control.DeepSeq
-import Control.Monad
-import Data.Attoparsec.Text
 import Data.Bifunctor
-import Data.Bool
-import Data.Char
 import Data.Foldable
-import Data.Function.Memoize
-import Data.Functor
-import Data.List.Extra
-import Data.Maybe
 import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
-import Data.Traversable
-import Data.Void
-import Debug.Trace
-import Text.Pretty.Simple
 import Data.Text
 
 data AOC = AOC
@@ -55,7 +25,6 @@ data AOC = AOC
     , part1 :: Text -> Text
     , part2 :: Text -> Text
     }
-
 
 {-
 ..........

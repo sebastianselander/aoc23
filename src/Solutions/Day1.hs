@@ -1,6 +1,6 @@
 module Solutions.Day1 (solve) where
 
-import Utils
+import Lude
 
 solve :: AOC
 solve = AOC 1 id id

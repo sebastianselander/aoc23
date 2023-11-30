@@ -1,22 +1,22 @@
 module Main where
 
+import Data.Text (Text)
+import Data.Text qualified as Text hiding (concat)
+import Data.Text.IO qualified as Text
 import Data.Time.Calendar
 import Data.Time.Clock
+import Lude (AOC (..))
 import System.Console.ANSI
 import System.Directory
 import System.Environment
 import System.Exit
 import System.IO
 import Text.Read
-import Data.Text (Text)
-import Data.Text.IO qualified as Text
-import Data.Text qualified as Text hiding (concat)
-import Utils (AOC(..))
 
 import Solutions.Day1 qualified as Day1
 
 mains :: [AOC]
-mains = [ Day1.solve ]
+mains = [Day1.solve]
 
 inputFilePrefix :: String
 inputFilePrefix = "day"
@@ -25,7 +25,12 @@ inputDir :: FilePath
 inputDir = "inputs/"
 
 makeISO :: Year -> MonthOfYear -> DayOfMonth -> Text
-makeISO year month day = Text.pack (show year) <> "-" <> Text.pack (show month) <> "-" <> Text.pack (show day)
+makeISO year month day =
+    Text.pack (show year)
+        <> "-"
+        <> Text.pack (show month)
+        <> "-"
+        <> Text.pack (show day)
 
 clean :: IO ()
 clean = setCursorPosition 0 0 >> clearScreen
@@ -76,14 +81,29 @@ main = do
             partNumber <- parsePart inputPart
             input <- parseFile (inputDir <> inputFilePrefix <> inputDay)
             f <- execute dayNumber partNumber mains
-            Text.putStrLn $ "Part" <> Text.pack (show partNumber) <> ": " <> f (Text.pack input)
+            Text.putStrLn $
+                "Part"
+                    <> Text.pack (show partNumber)
+                    <> ": "
+                    <> f (Text.pack input)
             timePost pre
         [inputDay, inputPart, inputFile] -> do
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
             input <- parseFile inputFile
             f <- execute dayNumber partNumber mains
-            Text.putStrLn $ "Part" <> Text.pack (show partNumber) <> ": " <> f (Text.pack input)
+            Text.putStrLn $
+                "Part"
+                    <> Text.pack (show partNumber)
+                    <> ": "
+                    <> f (Text.pack input)
+            timePost pre
+        [] -> do
+            f1 <- execute day Part1 mains
+            f2 <- execute day Part2 mains
+            input <- parseFile (inputDir <> inputFilePrefix <> show day)
+            Text.putStrLn $ "Part1: " <> f1 (Text.pack input)
+            Text.putStrLn $ "Part2: " <> f2 (Text.pack input)
             timePost pre
         xs ->
             errExit $
