@@ -1,8 +1,6 @@
 module Main where
 
-import Data.Text (Text)
-import Data.Text qualified as Text hiding (concat)
-import Data.Text.IO qualified as Text
+import Text.Read (readMaybe)
 import Data.Time.Calendar
 import Data.Time.Clock
 import Lude (AOC (..))
@@ -11,7 +9,6 @@ import System.Directory
 import System.Environment
 import System.Exit
 import System.IO
-import Text.Read
 
 import Solutions.Day1 qualified as Day1
 
@@ -24,35 +21,35 @@ inputFilePrefix = "day"
 inputDir :: FilePath
 inputDir = "inputs/"
 
-makeISO :: Year -> MonthOfYear -> DayOfMonth -> Text
+makeISO :: Year -> MonthOfYear -> DayOfMonth -> String
 makeISO year month day =
-    Text.pack (show year)
+     show year
         <> "-"
-        <> Text.pack (show month)
+        <>  show month
         <> "-"
-        <> Text.pack (show day)
+        <>  show day
 
 clean :: IO ()
 clean = setCursorPosition 0 0 >> clearScreen
 
 prettyDate :: Year -> MonthOfYear -> DayOfMonth -> IO ()
 prettyDate y m d = do
-    let today :: Text = "Today's date: "
+    let today = "Today's date: "
     let date = makeISO y m d
-    Text.putStr today
+    putStr today
     setSGR [SetItalicized True]
-    Text.putStrLn date
+    putStrLn date
     setSGR [Reset]
     setSGR
         [ SetConsoleIntensity BoldIntensity
         , SetColor Foreground Dull Green
         ]
-    Text.putStrLn $ titleBar (Text.length today + Text.length date)
+    putStrLn $ titleBar (length today + length date)
     setSGR [Reset]
     hFlush stdout
 
-titleBar :: Int -> Text
-titleBar n = Text.replicate n "="
+titleBar :: Int -> String
+titleBar n = replicate n '='
 
 data Part = Part1 | Part2
 
@@ -73,37 +70,37 @@ main = do
             f1 <- execute dayNumber Part1 mains
             f2 <- execute dayNumber Part2 mains
             input <- parseFile (inputDir <> inputFilePrefix <> inputDay)
-            Text.putStrLn $ "Part1: " <> f1 (Text.pack input)
-            Text.putStrLn $ "Part2: " <> f2 (Text.pack input)
+            putStrLn $ "Part1: " <> f1 input
+            putStrLn $ "Part2: " <> f2 input
             timePost pre
         [inputDay, inputPart] -> do
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
             input <- parseFile (inputDir <> inputFilePrefix <> inputDay)
             f <- execute dayNumber partNumber mains
-            Text.putStrLn $
+            putStrLn $
                 "Part"
-                    <> Text.pack (show partNumber)
+                    <>  show partNumber
                     <> ": "
-                    <> f (Text.pack input)
+                    <> f input
             timePost pre
         [inputDay, inputPart, inputFile] -> do
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
             input <- parseFile inputFile
             f <- execute dayNumber partNumber mains
-            Text.putStrLn $
+            putStrLn $
                 "Part"
-                    <> Text.pack (show partNumber)
+                    <>  show partNumber
                     <> ": "
-                    <> f (Text.pack input)
+                    <> f input
             timePost pre
         [] -> do
             f1 <- execute day Part1 mains
             f2 <- execute day Part2 mains
             input <- parseFile (inputDir <> inputFilePrefix <> show day)
-            Text.putStrLn $ "Part1: " <> f1 (Text.pack input)
-            Text.putStrLn $ "Part2: " <> f2 (Text.pack input)
+            putStrLn $ "Part1: " <> f1 input
+            putStrLn $ "Part2: " <> f2 input
             timePost pre
         xs ->
             errExit $
@@ -125,7 +122,7 @@ timePost pre = do
     let diff = diffUTCTime post pre
     putStrLn $ "\nTook " <> show diff
 
-execute :: Int -> Part -> [AOC] -> IO (Text -> Text)
+execute :: Int -> Part -> [AOC] -> IO (String -> String)
 execute n part xs = do
     aoc <- find n xs
     case part of
