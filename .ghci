@@ -1,9 +1,7 @@
 import Prelude ((++), pure)
 
-import Text.Megaparsec qualified as P
-import Text.Megaparsec.Char qualified as P
-import Text.Megaparsec.Char.Lexer qualified as L
-
 :set prompt "aoc> "
 
 :def hoogle \s -> pure (":! hoogle --count=15 \"" ++ s ++ "\"")
+
+:def imp \s -> pure (":l Solutions.Day" ++ s)
