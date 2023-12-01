@@ -63,15 +63,17 @@ import Data.Void (Void)
 import GHC.IO.Unsafe (unsafePerformIO)
 import Text.Megaparsec (Parsec)
 import Unsafe.Coerce
+import Data.Text
+import TextShow
 
-type Parser = Parsec Void String
+type Parser = Parsec Void Text
 
 data AOC = forall a b.
-      (Show a, Show b) =>
+      (TextShow a, TextShow b) =>
     AOC
     { day :: Int
-    , part1 :: String -> a
-    , part2 :: String -> b
+    , part1 :: Text -> a
+    , part2 :: Text -> b
     }
 
 {-
