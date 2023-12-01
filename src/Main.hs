@@ -1,3 +1,4 @@
+{-# LANGUAGE ImpredicativeTypes #-}
 module Main where
 
 import Text.Read (readMaybe)
@@ -67,40 +68,40 @@ main = do
     case args of
         [inputDay] -> do
             dayNumber <- parseDay inputDay
-            f1 <- execute dayNumber Part1 mains
-            f2 <- execute dayNumber Part2 mains
             input <- parseFile (inputDir <> inputFilePrefix <> inputDay)
-            putStrLn $ "Part1: " <> f1 input
-            putStrLn $ "Part2: " <> f2 input
+            res1 <- execute dayNumber Part1 mains input
+            res2 <- execute dayNumber Part2 mains input
+            putStrLn $ "Part1: " <> res1
+            putStrLn $ "Part2: " <> res2
             timePost pre
         [inputDay, inputPart] -> do
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
             input <- parseFile (inputDir <> inputFilePrefix <> inputDay)
-            f <- execute dayNumber partNumber mains
+            res <- execute dayNumber partNumber mains input
             putStrLn $
                 "Part"
                     <>  show partNumber
                     <> ": "
-                    <> f input
+                    <> res
             timePost pre
         [inputDay, inputPart, inputFile] -> do
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
             input <- parseFile inputFile
-            f <- execute dayNumber partNumber mains
+            res <- execute dayNumber partNumber mains input 
             putStrLn $
                 "Part"
                     <>  show partNumber
                     <> ": "
-                    <> f input
+                    <> res
             timePost pre
         [] -> do
-            f1 <- execute day Part1 mains
-            f2 <- execute day Part2 mains
             input <- parseFile (inputDir <> inputFilePrefix <> show day)
-            putStrLn $ "Part1: " <> f1 input
-            putStrLn $ "Part2: " <> f2 input
+            res1 <- execute day Part1 mains input
+            res2 <- execute day Part2 mains input
+            putStrLn $ "Part1: " <> res1
+            putStrLn $ "Part2: " <> res2
             timePost pre
         xs ->
             errExit $
@@ -122,12 +123,12 @@ timePost pre = do
     let diff = diffUTCTime post pre
     putStrLn $ "\nTook " <> show diff
 
-execute :: Int -> Part -> [AOC] -> IO (String -> String)
-execute n part xs = do
-    aoc <- find n xs
+execute :: Int -> Part -> [AOC] -> String -> IO String
+execute n part xs input = do
+    (AOC _ p1 p2) <- find n xs
     case part of
-        Part1 -> pure $ part1 aoc
-        Part2 -> pure $ part2 aoc
+        Part1 -> pure . show $ p1 input
+        Part2 -> pure . show $ p2 input
   where
     find :: Int -> [AOC] -> IO AOC
     find _ [] =

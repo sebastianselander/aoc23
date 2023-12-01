@@ -11,7 +11,7 @@ module Lude (
     onAllOther,
     applyN,
     todo,
-    Parser
+    Parser,
 )
 where
 
@@ -19,16 +19,15 @@ import Data.Bifunctor
 import Data.Foldable
 import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
-import Data.Text
-import Text.Megaparsec qualified as P
 import Data.Void (Void)
+import Text.Megaparsec qualified as P
 
 type Parser = P.Parsec Void String
 
-data AOC = AOC
+data AOC = forall a b. (Show a, Show b) => AOC
     { day :: Int
-    , part1 :: String -> String
-    , part2 :: String -> String
+    , part1 :: String -> a
+    , part2 :: String -> b
     }
 
 {-

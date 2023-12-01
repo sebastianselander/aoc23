@@ -6,11 +6,11 @@ import Data.Char
 import Lude
 import Data.List (isPrefixOf)
 
-p1 :: String -> String
-p1 = show . sum . map (f . map digitToInt . filter isDigit) . lines
+p1 :: String -> Int
+p1 = sum . map (f . map digitToInt . filter isDigit) . lines
 
-p2 :: String -> String
-p2 = show . sum . map (f . ugly) . lines
+p2 :: String -> Int
+p2 = sum . map (f . ugly) . lines
 
 f :: [Int] -> Int
 f xs = head xs * 10 + last xs
