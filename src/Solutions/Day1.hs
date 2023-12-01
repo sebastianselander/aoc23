@@ -1,50 +1,43 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 module Solutions.Day1 (solve) where
 
 import Data.Char
-import Data.Text (Text)
-import Data.Text qualified as Text
 import Lude
+import Data.List (isPrefixOf)
 
-p1 :: Text -> Text
-p1 = Text.pack . show . sum . map (f . Text.filter isDigit) . Text.lines
-  where
-    f :: Text -> Int
-    f xs =
-        let (first, last) = (Text.head xs, Text.last xs)
-         in read $ first : [last]
+p1 :: String -> String
+p1 = show . sum . map (f . map digitToInt . filter isDigit) . lines
 
-p2 :: Text -> Text
-p2 = Text.pack . show . sum . map (g . ugly) . Text.lines
-  where
-    g :: [Int] -> Int
-    g xs = head xs * 10 + last xs
+p2 :: String -> String
+p2 = show . sum . map (f . ugly) . lines
 
-ugly :: Text -> [Int]
+f :: [Int] -> Int
+f xs = head xs * 10 + last xs
+
+ugly :: String -> [Int]
+ugly [] = []
 ugly s
-  -- Really tail instead of drop (length of prefix)... :(
-  | Text.isPrefixOf "one" s   = 1 : ugly (Text.tail s)
-  | Text.isPrefixOf "two" s   = 2 : ugly (Text.tail s)
-  | Text.isPrefixOf "three" s = 3 : ugly (Text.tail s)
-  | Text.isPrefixOf "four" s  = 4 : ugly (Text.tail s)
-  | Text.isPrefixOf "five" s  = 5 : ugly (Text.tail s)
-  | Text.isPrefixOf "six" s   = 6 : ugly (Text.tail s)
-  | Text.isPrefixOf "seven" s = 7 : ugly (Text.tail s)
-  | Text.isPrefixOf "eight" s = 8 : ugly (Text.tail s)
-  | Text.isPrefixOf "nine" s  = 9 : ugly (Text.tail s)
-  | Text.isPrefixOf "1"   s   = 1 : ugly (Text.tail s)
-  | Text.isPrefixOf "2"   s   = 2 : ugly (Text.tail s)
-  | Text.isPrefixOf "3"   s   = 3 : ugly (Text.tail s)
-  | Text.isPrefixOf "4"   s   = 4 : ugly (Text.tail s)
-  | Text.isPrefixOf "5"   s   = 5 : ugly (Text.tail s)
-  | Text.isPrefixOf "6"   s   = 6 : ugly (Text.tail s)
-  | Text.isPrefixOf "7"   s   = 7 : ugly (Text.tail s)
-  | Text.isPrefixOf "8"   s   = 8 : ugly (Text.tail s)
-  | Text.isPrefixOf "9"   s   = 9 : ugly (Text.tail s)
-  | Text.null s = []
-  | otherwise = ugly (Text.tail s)
+  -- Tail instead of drop (length of prefix) :(
+  | "one"   `isPrefixOf` s = 1 : ugly (tail s)
+  | "two"   `isPrefixOf` s = 2 : ugly (tail s)
+  | "three" `isPrefixOf` s = 3 : ugly (tail s)
+  | "four"  `isPrefixOf` s = 4 : ugly (tail s)
+  | "five"  `isPrefixOf` s = 5 : ugly (tail s)
+  | "six"   `isPrefixOf` s = 6 : ugly (tail s)
+  | "seven" `isPrefixOf` s = 7 : ugly (tail s)
+  | "eight" `isPrefixOf` s = 8 : ugly (tail s)
+  | "nine"  `isPrefixOf` s = 9 : ugly (tail s)
+  | "1"     `isPrefixOf` s = 1 : ugly (tail s)
+  | "2"     `isPrefixOf` s = 2 : ugly (tail s)
+  | "3"     `isPrefixOf` s = 3 : ugly (tail s)
+  | "4"     `isPrefixOf` s = 4 : ugly (tail s)
+  | "5"     `isPrefixOf` s = 5 : ugly (tail s)
+  | "6"     `isPrefixOf` s = 6 : ugly (tail s)
+  | "7"     `isPrefixOf` s = 7 : ugly (tail s)
+  | "8"     `isPrefixOf` s = 8 : ugly (tail s)
+  | "9"     `isPrefixOf` s = 9 : ugly (tail s)
+  | otherwise              =     ugly (tail s)
 
 solve :: AOC
 solve = AOC 1 p1 p2
