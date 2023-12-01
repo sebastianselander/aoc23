@@ -8,42 +8,45 @@ build-type:      Simple
 extra-doc-files: CHANGELOG.md
 
 common warnings
-  ghc-options: -Wall -Wextra
+  ghc-options: -Wall 
+               -Wextra
 
 common extensions
   default-extensions:
-    ImplicitParams
     LambdaCase
     OverloadedRecordDot
     OverloadedStrings
+    OverloadedLists
     TypeApplications
+    MultiWayIf
 
 executable aoc23
-  import:           warnings, extensions
+  import:           warnings,
+                    extensions
   main-is:          Main.hs
   other-modules:
     Lude
     Solutions.Day1
   build-depends:
+    , base                  >=4.16
     , algebraic-graphs
     , ansi-terminal
-    , base                  >=4.16
     , containers
     , deepseq
     , directory
     , extra
+    , megaparsec
     , memoize
     , mtl
+    , parser-combinators
     , pretty-simple
+    , regex
     , search-algorithms
     , text
-    , megaparsec
     , text-show
     , time
     , unordered-containers
     , vector
-    , parser-combinators
-    , regex
 
   hs-source-dirs:   src
   default-language: GHC2021
