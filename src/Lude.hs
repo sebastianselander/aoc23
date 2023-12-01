@@ -2,6 +2,27 @@
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 module Lude (
+    module Control.Arrow,
+    module Control.Monad.Zip,
+    module Control.Monad,
+    module Control.Applicative,
+    module Data.Bifoldable,
+    module Data.Bits,
+    module Data.Bool,
+    module Data.Char,
+    module Data.Either,
+    module Data.Function,
+    module Data.Functor,
+    module Data.Int,
+    module Data.List,
+    module Data.Maybe,
+    module Data.Monoid,
+    module Data.Ord,
+    module Data.String,
+    module Data.Traversable,
+    module Data.Tuple,
+    module GHC.IO.Unsafe,
+    module Unsafe.Coerce,
     Rect (..),
     overlap,
     AOC (..),
@@ -15,16 +36,39 @@ module Lude (
 )
 where
 
+import Control.Applicative
+import Control.Arrow
+import Control.Monad
+import Control.Monad.Zip
+import Data.Bifoldable
 import Data.Bifunctor
+import Data.Bits
+import Data.Bool
+import Data.Char
+import Data.Either
 import Data.Foldable
+import Data.Function
+import Data.Functor
+import Data.Int
+import Data.List
+import Data.Maybe
+import Data.Monoid
+import Data.Ord
 import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
+import Data.String
+import Data.Traversable
+import Data.Tuple
 import Data.Void (Void)
-import Text.Megaparsec qualified as P
+import GHC.IO.Unsafe (unsafePerformIO)
+import Text.Megaparsec (Parsec)
+import Unsafe.Coerce
 
-type Parser = P.Parsec Void String
+type Parser = Parsec Void String
 
-data AOC = forall a b. (Show a, Show b) => AOC
+data AOC = forall a b.
+      (Show a, Show b) =>
+    AOC
     { day :: Int
     , part1 :: String -> a
     , part2 :: String -> b
