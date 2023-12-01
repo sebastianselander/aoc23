@@ -27,7 +27,6 @@ executable aoc23
   build-depends:
     , algebraic-graphs
     , ansi-terminal
-    , attoparsec
     , base                  >=4.16
     , containers
     , deepseq
@@ -38,11 +37,13 @@ executable aoc23
     , pretty-simple
     , search-algorithms
     , text
+    , megaparsec
     , text-show
     , time
     , unordered-containers
     , vector
     , parser-combinators
+    , regex
 
   hs-source-dirs:   src
   default-language: GHC2021
