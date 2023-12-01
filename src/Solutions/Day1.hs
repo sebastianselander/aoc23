@@ -7,16 +7,17 @@ import Data.Text qualified as T
 import Lude
 import Text.RE.TDFA.Text
 
-p1 :: String -> Int
+p1 :: Text -> Int
 p1 = sum
    . map (uncurry (+)
           . ((10*) . head &&& last)
           . map digitToInt
-          . filter isDigit)
-   . lines
+          . T.unpack
+          . T.filter isDigit)
+   . T.lines
 
-p2 :: String -> Int
-p2 = p1 . T.unpack . replace . T.pack
+p2 :: Text -> Int
+p2 = p1 . replace
 
 replace :: Text -> Text
 replace s =
