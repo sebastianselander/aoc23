@@ -1,5 +1,6 @@
 dist-newstyle/
 inputs/
+test/
 .direnv
 session-cookie
 tags
