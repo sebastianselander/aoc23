@@ -1,7 +1,5 @@
 module Solutions.Day2 where
 
-import Control.Monad.State
-import Data.Foldable (traverse_)
 import Lude
 import Text.Megaparsec qualified as P
 import Text.Megaparsec.Char qualified as P
@@ -46,45 +44,20 @@ impossible (Game _ games) = any (any f) games
     f (n, Blue) = n > 14
 
 p1 :: Text -> Int
-p1 =
-    sum
-        . map (\(Game n _) -> n)
-        . filter (not . impossible)
-        . fromJust
-        . P.parseMaybe parse
+p1 = sum
+   . map (\(Game n _) -> n)
+   . filter (not . impossible)
+   . fromJust
+   . P.parseMaybe parse
 
-data Minimal = M
-    { redCount :: Int
-    , blueCount :: Int
-    , greenCount :: Int
-    }
-    deriving (Show)
-
-gameToMini :: [(Int, Color)] -> State Minimal ()
-gameToMini [] = pure ()
-gameToMini (x : xs) = do
-    m <- get
-    case x of
-        (n, Blue) ->
-            put (M m.redCount (max n m.blueCount) m.greenCount)
-                >> gameToMini xs
-        (n, Green) ->
-            put (M m.redCount m.blueCount (max n m.greenCount))
-                >> gameToMini xs
-        (n, Red) ->
-            put (M (max n m.redCount) m.blueCount m.greenCount)
-                >> gameToMini xs
-
-minimals :: [[(Int, Color)]] -> State Minimal ()
-minimals = traverse_ gameToMini
-
-run :: Game -> Int
-run (Game _ games) =
-    let (M a b c) = execState (minimals games) (M 0 0 0)
-     in a * b * c
+maxes :: Game -> Int
+maxes (Game _ xs)
+    = maximum [n | (n, Red) <- concat xs]
+    * maximum [n | (n, Green) <- concat xs]
+    * maximum [n | (n, Blue) <- concat xs]
 
 p2 :: Text -> Int
-p2 = sum . map run . fromJust . P.parseMaybe parse
+p2 = sum . map maxes . fromJust . P.parseMaybe parse
 
 solve :: AOC
 solve = AOC 2 p1 p2
