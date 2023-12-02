@@ -16,7 +16,13 @@ data Game = Game Int [[(Int, Color)]]
 pColor :: Parser (Int, Color)
 pColor = do
     n <- L.decimal <* P.space
-    color <- "blue" $> Blue <|> "red" $> Red <|> "green" $> Green
+    color <-
+        "blue"
+            $> Blue
+            <|> "red"
+            $> Red
+            <|> "green"
+            $> Green
     pure (n, color)
 
 pOnePick :: Parser [(Int, Color)]
@@ -40,11 +46,12 @@ impossible (Game _ games) = any (any f) games
     f (n, Blue) = n > 14
 
 p1 :: Text -> Int
-p1 = sum
-   . map (\(Game n _) -> n)
-   . filter (not . impossible)
-   . fromJust
-   . P.parseMaybe parse
+p1 =
+    sum
+        . map (\(Game n _) -> n)
+        . filter (not . impossible)
+        . fromJust
+        . P.parseMaybe parse
 
 data Minimal = M
     { redCount :: Int
@@ -58,18 +65,15 @@ gameToMini [] = pure ()
 gameToMini (x : xs) = do
     m <- get
     case x of
-        (n, Blue) -> do
-            let b = max n m.blueCount
-            put (M m.redCount b m.greenCount)
-            gameToMini xs
-        (n, Green) -> do
-            let b = max n m.greenCount
-            put (M m.redCount m.blueCount b)
-            gameToMini xs
-        (n, Red) -> do
-            let b = max n m.redCount
-            put (M b m.blueCount m.greenCount)
-            gameToMini xs
+        (n, Blue) ->
+            put (M m.redCount (max n m.blueCount) m.greenCount)
+                >> gameToMini xs
+        (n, Green) ->
+            put (M m.redCount m.blueCount (max n m.greenCount))
+                >> gameToMini xs
+        (n, Red) ->
+            put (M (max n m.redCount) m.blueCount m.greenCount)
+                >> gameToMini xs
 
 minimals :: [[(Int, Color)]] -> State Minimal ()
 minimals = traverse_ gameToMini
