@@ -51,11 +51,11 @@ p1 = sum
    . P.parseMaybe parse
 
 maxes :: Game -> Int
-maxes (Game _ xs)
-    = maximum [n | (n, Red) <- concat xs]
-    * maximum [n | (n, Green) <- concat xs]
-    * maximum [n | (n, Blue) <- concat xs]
-
+maxes (Game _ xs) = maximum [ r * g * b
+                            | (r, Red) <- concat xs
+                            , (g, Blue) <- concat xs
+                            , (b, Green) <- concat xs
+                            ]
 p2 :: Text -> Int
 p2 = sum . map maxes . fromJust . P.parseMaybe parse
 
