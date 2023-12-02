@@ -33,6 +33,7 @@ module Lude (
     applyN,
     todo,
     Parser,
+    Text
 )
 where
 

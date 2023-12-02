@@ -27,6 +27,7 @@ executable aoc23
   other-modules:
     Lude
     Solutions.Day1
+    Solutions.Day2
   build-depends:
     , base                  >=4.16
     , algebraic-graphs

@@ -26,9 +26,10 @@ import Prelude hiding (
 import Prelude qualified as Prel
 
 import Solutions.Day1 qualified as Day1
+import Solutions.Day2 qualified as Day2
 
 mains :: [AOC]
-mains = [Day1.solve]
+mains = [Day1.solve, Day2.solve]
 
 inputFilePrefix :: Text
 inputFilePrefix = "day"
