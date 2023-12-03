@@ -32,7 +32,8 @@ look xs (x,y) = do
 keep :: (Int, Int) -> Reader [String] (Maybe (Bool, Char))
 keep (x,y) = do
     matrix <- ask
-    let kept = any (\z -> (z /= '.') && (not . isDigit) z) (mapMaybe (look matrix) (adj (x,y)))
+    let kept = any (\z -> (z /= '.') && (not . isDigit) z)
+                   (mapMaybe (look matrix) (adj (x,y)))
     case look matrix (x,y) of
         Just c -> pure $ pure (kept, c)
         Nothing -> pure Nothing
@@ -42,10 +43,11 @@ indices width height = [(x,y) | y <- [0 .. height - 1], x <- [0 .. width - 1]]
 
 clump :: [(Bool,Char)] -> [(Bool, Int)]
 clump (a:b:c:xs)
-  | isDigit (snd a) && isDigit (snd b) && isDigit (snd c) = (fst a || fst b || fst c
-                      , read (snd a : snd b : [snd c])) : clump xs
+  | isDigit (snd a) && isDigit (snd b) && isDigit (snd c) 
+    = (fst a || fst b || fst c , read (snd a : snd b : [snd c])) : clump xs
 clump (a:b:xs)
-  | isDigit (snd a) && isDigit (snd b) = (fst a || fst b, read (snd a : [snd b])) : clump xs
+  | isDigit (snd a) && isDigit (snd b) 
+    = (fst a || fst b , read (snd a : [snd b])) : clump xs
 clump (a:xs)
   | isDigit (snd a) = (fst a, read [snd a]) : clump xs
   | otherwise       = clump xs
@@ -71,16 +73,29 @@ isNumber (Number _) = True
 isNumber _          = False
 
 clumpRep :: Int -> Int -> [Rep] -> [Rep]
-clumpRep x y (Number a:Number b:Number c:xs) = NumberIndex (x+2,y) : NumberIndex (x+2,y) : Number (a * 100 + b * 10 + c) : clumpRep (x + 3) y xs
-clumpRep x y (Number a:Number b:as) = NumberIndex (x+1,y) : Number (a * 10 + b) : clumpRep (x + 2) y as
+clumpRep x y (Number a:Number b:Number c:xs)
+    = NumberIndex (x+2,y)
+    : NumberIndex (x+2,y)
+    : Number (a * 100 + b * 10 + c)
+    : clumpRep (x + 3) y xs
+clumpRep x y (Number a:Number b:as)
+    = NumberIndex (x+1,y)
+    : Number (a * 10 + b)
+    : clumpRep (x + 2) y as
 clumpRep x y (a:as) = a : clumpRep (x + 1) y as
 clumpRep x y [] = []
 
 parse2 :: Parser [Rep]
-parse2 = P.some ((Number . digitToInt <$> P.digitChar) <|> P.char '*' $> Star <|> P.asciiChar $> Ignore)
+parse2 = P.some ((Number . digitToInt <$> P.digitChar)
+            <|> P.char '*' $> Star
+            <|> P.asciiChar $> Ignore)
 
 runParse2 :: Text -> [[IRep]]
-runParse2 = indexify 0 . adjust 0 . map (fromJust . P.parseMaybe parse2) . Text.lines
+runParse2
+    = indexify 0
+    . adjust 0
+    . map (fromJust . P.parseMaybe parse2)
+    . Text.lines
   where
     adjust :: Int -> [[Rep]] -> [[Rep]]
     adjust y (x:xs) = clumpRep 0 y x : adjust (y + 1) xs
@@ -109,13 +124,13 @@ type StarMap = Map (Int, Int) [Int]
 toNum :: [[IRep]] -> Set (Int, Int) -> [IRep] -> [Int]
 toNum _ _ [] = []
 toNum matrix s (a:as) = case a of
-   (x,y,Number n) | (x,y) `Set.notMember` s -> n : toNum matrix (Set.insert (x,y) s) as
-   (_,_,NumberIndex (x',y')) | (x',y') `Set.notMember` s -> case look matrix (x',y') of
+   (x,y,Number n) | (x,y) `Set.notMember` s 
+        -> n : toNum matrix (Set.insert (x,y) s) as
+   (_,_,NumberIndex (x',y')) | (x',y') `Set.notMember` s 
+        -> case look matrix (x',y') of
         Just (_,_,Number n) -> n : toNum matrix (Set.insert (x',y') s) as
         _ -> error "fail"
    _ -> toNum matrix s as
-
-test = runParse2 testData
 
 adjStar :: [[IRep]] -> (Int, Int) -> Int
 adjStar matrix (x,y) = do
