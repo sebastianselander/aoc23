@@ -25,14 +25,16 @@ import Prelude hiding (
  )
 import Prelude qualified as Prel
 
-import Solutions.Day1 qualified as Day1
-import Solutions.Day2 qualified as Day2
-import Solutions.Day3 qualified as  Day3
+import Solutions.Day01 qualified as D1
+import Solutions.Day02 qualified as D2
+import Solutions.Day03 qualified as D3
+import Solutions.Day04 qualified as D4
 
 mains :: [AOC]
-mains = [ Day1.solve
-        , Day2.solve
-        , Day3.solve
+mains = [ D1.solve
+        , D2.solve
+        , D3.solve
+        , D4.solve
         ]
 
 inputFilePrefix :: Text

@@ -1,6 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Solutions.Day1 (solve) where
+module Solutions.Day01 (solve) where
 
 import Data.Text (Text)
 import Data.Text qualified as T
@@ -8,13 +8,16 @@ import Lude
 import Text.RE.TDFA.Text
 
 p1 :: Text -> Int
-p1 = sum
-   . map (uncurry (+)
-          . ((10*) . head &&& last)
-          . map digitToInt
-          . T.unpack
-          . T.filter isDigit)
-   . T.lines
+p1 =
+    sum
+        . map
+            ( uncurry (+)
+                . ((10 *) . head &&& last)
+                . map digitToInt
+                . T.unpack
+                . T.filter isDigit
+            )
+        . T.lines
 
 p2 :: Text -> Int
 p2 = p1 . replace
