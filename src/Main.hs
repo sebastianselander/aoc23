@@ -27,9 +27,13 @@ import Prelude qualified as Prel
 
 import Solutions.Day1 qualified as Day1
 import Solutions.Day2 qualified as Day2
+import Solutions.Day3 qualified as  Day3
 
 mains :: [AOC]
-mains = [Day1.solve, Day2.solve]
+mains = [ Day1.solve
+        , Day2.solve
+        , Day3.solve
+        ]
 
 inputFilePrefix :: Text
 inputFilePrefix = "day"
