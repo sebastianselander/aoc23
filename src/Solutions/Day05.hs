@@ -135,13 +135,12 @@ simulate2 :: Almanac -> Int -> (Bool, Int)
 simulate2 alm n = (isSeed (run2 alm n) alm, n)
 
 p2 :: Text -> Int
--- p2 t = fromJust $ lookup True $ map (simulate2 (parse t)) [0 .. ]
 p2 t = binS 0 0 (simulate2 (parse t))
 
 binS :: Int -> Int -> (Int -> (Bool, Int)) -> Int
 binS acc n f
   | fst (f n) = fromJust $ lookup True $ map f [acc .. n]
-  | otherwise = binS n (n + 10_000) f
+  | otherwise = binS n (n + 20_000) f
 
 solve :: AOC
 solve = AOC 5 p1 p2
