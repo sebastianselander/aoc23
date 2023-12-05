@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedLists #-}
 module Solutions.Day04 (solve) where
 
 import Lude

@@ -16,7 +16,6 @@ common extensions
     LambdaCase
     OverloadedRecordDot
     OverloadedStrings
-    OverloadedLists
     TypeApplications
     MultiWayIf
 
@@ -30,6 +29,7 @@ executable aoc23
     Solutions.Day02
     Solutions.Day03
     Solutions.Day04
+    Solutions.Day05
   build-depends:
     , base                  >=4.16
     , algebraic-graphs

@@ -29,12 +29,14 @@ import Solutions.Day01 qualified as D1
 import Solutions.Day02 qualified as D2
 import Solutions.Day03 qualified as D3
 import Solutions.Day04 qualified as D4
+import Solutions.Day05 qualified as D5
 
 mains :: [AOC]
 mains = [ D1.solve
         , D2.solve
         , D3.solve
         , D4.solve
+        , D5.solve
         ]
 
 inputFilePrefix :: Text
