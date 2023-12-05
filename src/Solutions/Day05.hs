@@ -9,8 +9,6 @@ import Lude
 import Text.Megaparsec qualified as P
 import Text.Megaparsec.Char qualified as P
 import Text.Megaparsec.Char.Lexer qualified as L
-import Data.IntSet (IntSet)
-import Data.IntSet qualified as Set
 
 data Almanac = Alm
     { seeds :: [Int]
