@@ -53,6 +53,8 @@ parse t = Alm seeds soil fert water light temp humid loc
     humid = fromJust $ P.parseMaybe (pTo "temperature-to-humidity") (c !! 6)
     loc = fromJust $ P.parseMaybe (pTo "humidity-to-location") (c !! 7)
 
+-- Part 1
+
 simulate :: Almanac -> Int
 simulate m = minimum $ map (run m) m.seeds
 
@@ -62,16 +64,14 @@ run alm n =
         foldl'
             runSeed
             (False, n)
-            ( [ alm.seed_to_soil
-              , alm.soil_to_fertilizer
-              , alm.fertilizer_to_water
-              , alm.water_to_light
-              , alm.light_to_temperature
-              , alm.temperature_to_humidity
-              , alm.humidity_to_location
-              ]
-                :: [[ConversionMap]]
-            )
+            [ alm.seed_to_soil
+            , alm.soil_to_fertilizer
+            , alm.fertilizer_to_water
+            , alm.water_to_light
+            , alm.light_to_temperature
+            , alm.temperature_to_humidity
+            , alm.humidity_to_location
+            ]
 
 runSeed :: (Bool, Int) -> [ConversionMap] -> (Bool, Int)
 runSeed p xs
@@ -92,7 +92,6 @@ inRange cm m =
 
 p1 :: Text -> Int
 p1 = simulate . parse
-
 
 -- Part 2
 
@@ -121,26 +120,22 @@ isSeed n = \case
 run2 :: Almanac -> Int -> Int
 run2 alm n =
     snd $
-        foldl'
-            runSeed2
-            (False, n)
-            ( reverse [ alm.seed_to_soil
-              , alm.soil_to_fertilizer
-              , alm.fertilizer_to_water
-              , alm.water_to_light
-              , alm.light_to_temperature
-              , alm.temperature_to_humidity
-              , alm.humidity_to_location
-              ]
-                :: [[ConversionMap]]
-            )
+        foldl' runSeed2 (False, n) $
+            reverse
+                [ alm.seed_to_soil
+                , alm.soil_to_fertilizer
+                , alm.fertilizer_to_water
+                , alm.water_to_light
+                , alm.light_to_temperature
+                , alm.temperature_to_humidity
+                , alm.humidity_to_location
+                ]
 
 simulate2 :: Almanac -> Int -> (Bool, Int)
 simulate2 alm n = (isSeed (run2 alm n) alm, n)
 
-
 p2 :: Text -> Int
-p2 t = fromJust $ lookup True $ map (simulate2 (parse t)) [0..]
+p2 t = fromJust $ lookup True $ map (simulate2 (parse t)) [0 ..]
 
 solve :: AOC
 solve = AOC 5 p1 p2
