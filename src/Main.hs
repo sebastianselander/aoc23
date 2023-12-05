@@ -30,6 +30,7 @@ import Solutions.Day02 qualified as D2
 import Solutions.Day03 qualified as D3
 import Solutions.Day04 qualified as D4
 import Solutions.Day05 qualified as D5
+import Text.Pretty.Simple (pPrint)
 
 mains :: [AOC]
 mains = [ D1.solve
@@ -99,8 +100,8 @@ main = do
             input <- parseFile $ inputDir <> inputFilePrefix <> inputDay
             res1 <- execute dayNumber Part1 mains input
             res2 <- execute dayNumber Part2 mains input
-            putStrLn $ "Part1: " <> res1
-            putStrLn $ "Part2: " <> res2
+            pPrint $ "Part1: " <> res1
+            pPrint $ "Part2: " <> res2
             timePost pre
         [inputDay', inputPart'] -> do
             let inputDay = pack inputDay'

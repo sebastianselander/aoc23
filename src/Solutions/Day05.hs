@@ -9,6 +9,8 @@ import Lude
 import Text.Megaparsec qualified as P
 import Text.Megaparsec.Char qualified as P
 import Text.Megaparsec.Char.Lexer qualified as L
+import Data.IntSet (IntSet)
+import Data.IntSet qualified as Set
 
 data Almanac = Alm
     { seeds :: [Int]
@@ -135,7 +137,7 @@ simulate2 :: Almanac -> Int -> (Bool, Int)
 simulate2 alm n = (isSeed (run2 alm n) alm, n)
 
 p2 :: Text -> Int
-p2 t = fromJust $ lookup True $ map (simulate2 (parse t)) [0 ..]
+p2 t = fromJust $ lookup True $ map (simulate2 (parse t)) [0 .. ]
 
 solve :: AOC
 solve = AOC 5 p1 p2
