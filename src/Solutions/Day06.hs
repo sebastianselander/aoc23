@@ -1,33 +1,28 @@
 module Solutions.Day06 (solve) where
 
-import Lude
 import Data.Text qualified as Text
+import Lude
 
-data Race = R { time :: [Int], distance :: [Int] }
-  deriving Show
-
-parse :: Text -> Race
-parse t = R (fixup time) (fixup dist)
+parse :: Text -> ([Int], [Int])
+parse t = (fixup time, fixup dist)
   where
-    [time,dist] = map Text.unpack $ Text.lines t
+    [time, dist] = map Text.unpack $ Text.lines t
     fixup = map read . words . dropWhile (not . isDigit)
 
 possibilities :: Int -> [Int]
-possibilities n = zipWith (*) [0 .. n ] [n, n - 1 .. 0]
+possibilities n = zipWith (*) [0 .. n] [n, n - 1 .. 0]
 
 race :: Int -> Int -> Int
-race time dist = length $ filter (>dist) (possibilities time)
+race time dist = length $ filter (> dist) (possibilities time)
+
+run :: ([Int], [Int]) -> Int
+run = product . uncurry (zipWith race)
 
 p1 :: Text -> Int
-p1 t = product $ zipWith race (time r) (distance r)
-  where
-    r = parse t
+p1 = run . parse
 
 p2 :: Text -> Int
-p2 t = product 
-     $ zipWith race [read $ concatMap show ti] [read $ concatMap show di]
-    where
-      (R ti di) = parse t
+p2 = run . both (singleton . read . concatMap show) . parse
 
 solve :: AOC
 solve = AOC 6 p1 p2
