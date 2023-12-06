@@ -1,12 +1,12 @@
 module Solutions.Day06 (solve) where
 
-import Data.Text qualified as Text
+import Data.Text (unpack)
 import Lude
 
 parse :: Text -> ([Int], [Int])
 parse t = (fixup time, fixup dist)
   where
-    [time, dist] = map Text.unpack $ Text.lines t
+    [time, dist] = lines $ unpack t
     fixup = map read . words . dropWhile (not . isDigit)
 
 possibilities :: Int -> [Int]
