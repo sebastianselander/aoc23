@@ -23,17 +23,26 @@ module Lude (
     module Data.Tuple,
     module GHC.IO.Unsafe,
     module Unsafe.Coerce,
+    module Data.Function.Memoize,
     Rect (..),
     overlap,
     AOC (..),
     opPairs,
     both,
     manhattan,
-    onAllOther,
-    applyN,
+    onOthers,
+    apN,
     todo,
+    listToTuple,
+    setAt,
+    pertubations,
+    pertubationsBy,
+    findIndicesElem,
+    slidingWindows,
+    freqs,
+    fixed,
     Parser,
-    Text
+    Text,
 )
 where
 
@@ -49,25 +58,29 @@ import Data.Char
 import Data.Either
 import Data.Foldable
 import Data.Function
+import Data.Function.Memoize
 import Data.Functor
 import Data.Int
 import Data.List
+import Data.Map (Map)
+import Data.Map qualified as M
 import Data.Maybe
 import Data.Monoid
 import Data.Ord
 import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
 import Data.String
+import Data.Text (Text)
 import Data.Traversable
 import Data.Tuple
 import Data.Void (Void)
 import GHC.IO.Unsafe (unsafePerformIO)
 import Text.Megaparsec (Parsec)
+import TextShow (TextShow)
 import Unsafe.Coerce
-import Data.Text
-import TextShow
 
 type Parser = Parsec Void Text
+
 
 data AOC = forall a b.
       (TextShow a, TextShow b) =>
@@ -77,22 +90,49 @@ data AOC = forall a b.
     , part2 :: Text -> b
     }
 
-{-
-..........
-..........
-...####...
-...####...
-...####...
-..........
-..........
-Represented as:
-    Rect {
-        xCorrd = 3,
-        yCoord = 2,
-        extendX = 3,
-        extendY = 2
-    }
--}
+instance Show AOC where
+    show (AOC n _ _) =
+        "AOC contains functions, but this one represents day " ++ show n
+
+slidingWindows :: forall a. Int -> [a] -> [[a]]
+slidingWindows n l = take n <$> tails l
+
+listToTuple :: [a] -> (a, a)
+listToTuple [a, b] = (a, b)
+listToTuple _ = error "ERROR: more than two elements"
+
+freqs :: (Foldable f, Ord a) => f a -> Map a Int
+freqs = M.fromListWith (+) . map (,1) . toList
+
+-- | Bottoms if the index is out of bounds
+setAt :: Int -> a -> [a] -> [a]
+setAt n x = (\(l, r) -> l ++ x : tail r) . splitAt n
+
+pertubationsBy :: (a -> Bool) -> (a -> a) -> [a] -> [[a]]
+pertubationsBy p f l = [setAt n (f x) l | (x, n) <- findIndicesElem p l]
+
+findIndicesElem :: (Foldable t) => (a -> Bool) -> t a -> [(a, Int)]
+findIndicesElem p = reverse . fst . foldl' go ([], 0)
+  where
+    go (l, n) x
+        | p x = ((x, n) : l, n + 1)
+        | otherwise = (l, n + 1)
+
+-- | Unconditional pertubation
+pertubations :: (a -> a) -> [a] -> [[a]]
+pertubations = pertubationsBy (const True)
+
+apN :: Int -> (a -> a) -> a -> a
+apN 0 _ !x = x
+apN !n f !x = apN (n - 1) f (f x)
+
+opPairs :: (a -> b -> c) -> (a, a) -> (b, b) -> (c, c)
+opPairs f (a, aa) (b, bb) = (f a b, f aa bb)
+
+fixed :: (Eq a) => (a -> a) -> a -> a
+fixed f !x = if x == y then x else fixed f y
+  where
+    y = f x
 
 data Rect = Rect
     { xCoord :: Int
@@ -101,15 +141,6 @@ data Rect = Rect
     , extendY :: Int
     }
     deriving (Show)
-
-applyN :: Int -> (a -> a) -> a -> a
-applyN n f x = go x n f x
-  where
-    go acc 0 _ _ = acc
-    go !acc n f x = go (f acc) (n - 1) f x
-
-opPairs :: (a -> b -> c) -> (a, a) -> (b, b) -> (c, c)
-opPairs f (a, aa) (b, bb) = (f a b, f aa bb)
 
 overlap :: Rect -> Rect -> Bool
 overlap rect1 rect2 =
@@ -125,8 +156,8 @@ both f = bimap f f
 manhattan :: (Int, Int) -> (Int, Int) -> Int
 manhattan (x, y) (xx, yy) = abs (xx - x) + abs (yy - y)
 
-onAllOther :: forall a b. (a -> a -> b) -> [a] -> [[b]]
-onAllOther f xs =
+onOthers :: forall a b. (a -> a -> b) -> [a] -> [[b]]
+onOthers f xs =
     let seq = Seq.fromList xs
      in toList (toList <$> go 0 seq seq)
   where

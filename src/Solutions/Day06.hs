@@ -4,10 +4,10 @@ import Data.Text (unpack)
 import Lude
 
 parse :: Text -> ([Int], [Int])
-parse t = (fixup time, fixup dist)
-  where
-    [time, dist] = lines $ unpack t
-    fixup = map read . words . dropWhile (not . isDigit)
+parse = listToTuple
+      . map (map read . words . dropWhile (not . isDigit))
+      . lines
+      . unpack
 
 possibilities :: Int -> [Int]
 possibilities n = zipWith (*) [0 .. n] [n, n - 1 .. 0]

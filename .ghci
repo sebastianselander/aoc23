@@ -1,7 +1,7 @@
-import Prelude ((++), pure)
+import Prelude ((++), pure, length, (==))
 
 :set prompt "aoc> "
 
 :def hoogle \s -> pure (":! hoogle --count=15 \"" ++ s ++ "\"")
 
-:def imp \s -> pure (":l Solutions.Day" ++ s)
+:def imp \s -> pure (if length s == 1 then ":l Solutions.Day0" ++ s else ":l Solutions.Day" ++ s)
