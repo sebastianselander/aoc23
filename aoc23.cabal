@@ -31,6 +31,7 @@ executable aoc23
     Solutions.Day04
     Solutions.Day05
     Solutions.Day06
+    Solutions.Day07
   build-depends:
     , base                  >=4.16
     , algebraic-graphs
