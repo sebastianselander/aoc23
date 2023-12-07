@@ -35,7 +35,7 @@ compareHands cr f as bs = case comparing f as bs of
     go :: String -> String -> Ordering
     go [] [] = EQ
     go (x : xs) (y : ys) =
-        case (compare `on` (fromJust . flip elemIndex cr)) x y of
+        case comparing (fromJust . flip elemIndex cr) x y of
             LT -> LT
             GT -> GT
             EQ -> go xs ys
