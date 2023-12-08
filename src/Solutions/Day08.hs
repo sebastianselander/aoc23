@@ -4,26 +4,23 @@
 module Solutions.Day08 (solve) where
 
 import Data.List.Extra
-import Data.Map (Map)
+import Data.Map (Map, (!))
 import Data.Map qualified as Map
 import Data.Text qualified as Text
 import Lude
 
 parse :: Text -> (String, Map String String)
-parse t = (l, Map.fromList $ concatMap lineToTup m)
+parse t = (l, Map.fromList $ concatMap lineToTup $ lines r)
   where
     [l, r] = splitOn "\n\n" $ Text.unpack t
-    m = lines r
     lineToTup :: String -> [(String, String)]
     lineToTup [a, b, c, _, _, _, _, l1, l2, l3, _, _, r1, r2, r3, _] =
         [(['L', a, b, c], [l1, l2, l3]), (['R', a, b, c], [r1, r2, r3])]
 
 run1 :: String -> Map String String -> String -> Int
-run1 (lr : lrs) m str = go (lr : str)
-  where
-    go s = case Map.lookup s m of
-        Just "ZZZ" -> 1
-        Just s' -> 1 + run1 lrs m s'
+run1 (lr : lrs) m str = case m ! (lr : str) of
+    "ZZZ" -> 1
+    s' -> 1 + run1 lrs m s'
 
 endWithA :: Map String String -> [String]
 endWithA = nub . map tail . filter (('A' ==) . last) . Map.keys
@@ -44,7 +41,7 @@ p1 t = run1 (cycle l) r "AAA"
     (l, r) = parse t
 
 p2 :: Text -> Int
-p2 t = foldr1 lcm $ map (stepsToZ (cycle l) r) $ endWithA r
+p2 t = foldl1' lcm $ map (stepsToZ (cycle l) r) $ endWithA r
   where
     (l, r) = parse t
 
