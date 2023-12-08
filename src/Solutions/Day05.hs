@@ -4,7 +4,7 @@ module Solutions.Day05 (solve) where
 
 import Data.List.Extra
 import Data.Text (pack, unpack)
-import Lude
+import Lude hiding (inRange)
 
 import Text.Megaparsec qualified as P
 import Text.Megaparsec.Char qualified as P

@@ -13,6 +13,8 @@ module Lude (
     module Data.Either,
     module Data.Function,
     module Data.Functor,
+    module Data.Functor.Classes,
+    module Data.Ix,
     module Data.Int,
     module Data.List,
     module Data.Maybe,
@@ -41,6 +43,7 @@ module Lude (
     slidingWindows,
     freqs,
     fixed,
+    byOrder,
     Parser,
     Text,
 )
@@ -60,7 +63,9 @@ import Data.Foldable
 import Data.Function
 import Data.Function.Memoize
 import Data.Functor
+import Data.Functor.Classes
 import Data.Int
+import Data.Ix
 import Data.List
 import Data.Map (Map)
 import Data.Map qualified as M
@@ -81,7 +86,6 @@ import Unsafe.Coerce
 
 type Parser = Parsec Void Text
 
-
 data AOC = forall a b.
       (TextShow a, TextShow b) =>
     AOC
@@ -93,6 +97,12 @@ data AOC = forall a b.
 instance Show AOC where
     show (AOC n _ _) =
         "AOC contains functions, but this one represents day " ++ show n
+
+{- | Bottom if the list does not contain both elements
+  Quite slow probaby
+-}
+byOrder :: (Ord a) => [a] -> a -> a -> Ordering
+byOrder xs y z = compare (fromJust $ elemIndex y xs) (fromJust $ elemIndex z xs)
 
 slidingWindows :: forall a. Int -> [a] -> [[a]]
 slidingWindows n l = take n <$> tails l
