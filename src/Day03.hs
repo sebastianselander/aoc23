@@ -1,4 +1,4 @@
-module Solutions.Day03 where
+module Day03 where
 
 import Lude
 

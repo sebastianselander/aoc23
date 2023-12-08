@@ -25,14 +25,14 @@ import Prelude hiding (
  )
 import Prelude qualified as Prel
 
-import Solutions.Day01 qualified as D1
-import Solutions.Day02 qualified as D2
-import Solutions.Day03 qualified as D3
-import Solutions.Day04 qualified as D4
-import Solutions.Day05 qualified as D5
-import Solutions.Day06 qualified as D6
-import Solutions.Day07 qualified as D7
-import Solutions.Day08 qualified as D8
+import Day01 qualified as D1
+import Day02 qualified as D2
+import Day03 qualified as D3
+import Day04 qualified as D4
+import Day05 qualified as D5
+import Day06 qualified as D6
+import Day07 qualified as D7
+import Day08 qualified as D8
 
 mains :: [AOC]
 mains = [ D1.solve

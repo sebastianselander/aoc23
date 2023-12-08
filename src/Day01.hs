@@ -1,6 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Solutions.Day01 (solve) where
+module Day01 (solve) where
 
 import Data.Text (Text)
 import Data.Text qualified as T

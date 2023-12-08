@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedRecordDot #-}
 
-module Solutions.Day05 (solve) where
+module Day05 (solve) where
 
 import Data.List.Extra
 import Data.Text (pack, unpack)

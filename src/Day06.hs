@@ -1,4 +1,4 @@
-module Solutions.Day06 (solve) where
+module Day06 (solve) where
 
 import Data.Text (unpack)
 import Lude

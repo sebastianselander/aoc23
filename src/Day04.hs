@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedLists #-}
-module Solutions.Day04 (solve) where
+module Day04 (solve) where
 
 import Lude
 

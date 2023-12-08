@@ -1,4 +1,4 @@
-module Solutions.Day07 (solve) where
+module Day07 (solve) where
 
 import Data.List.Extra
 import Data.Text qualified as Text

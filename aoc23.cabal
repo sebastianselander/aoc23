@@ -25,14 +25,14 @@ executable aoc23
   main-is:          Main.hs
   other-modules:
     Lude
-    Solutions.Day01
-    Solutions.Day02
-    Solutions.Day03
-    Solutions.Day04
-    Solutions.Day05
-    Solutions.Day06
-    Solutions.Day07
-    Solutions.Day08
+    Day01
+    Day02
+    Day03
+    Day04
+    Day05
+    Day06
+    Day07
+    Day08
   build-depends:
     , base                  >=4.16
     , algebraic-graphs

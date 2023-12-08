@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 {-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
 
-module Solutions.Day08 (solve) where
+module Day08 (solve) where
 
 import Data.List.Extra
 import Data.Map (Map, (!))

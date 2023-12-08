@@ -1,4 +1,4 @@
-module Solutions.Day02 where
+module Day02 where
 
 import Lude
 import Text.Megaparsec qualified as P
