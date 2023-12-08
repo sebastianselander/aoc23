@@ -1,4 +1,4 @@
-{-# LANGUAGE ImpredicativeTypes #-}
+{-# LANGUAGE OverloadedRecordDot #-}
 
 module Main where
 
@@ -6,13 +6,13 @@ import Data.Text
 import Data.Text.IO
 import Data.Time.Calendar
 import Data.Time.Clock
-import Lude (AOC (..))
+import Lude (AOC (..), forM_)
 import System.Console.ANSI
 import System.Directory
 import System.Environment
 import System.Exit
 import System.IO hiding (hPutStrLn, putStr, putStrLn, readFile)
-import Text.Read (readMaybe)
+import Text.Read (readMaybe, get)
 import TextShow
 import Prelude hiding (
     concat,
@@ -32,6 +32,7 @@ import Solutions.Day04 qualified as D4
 import Solutions.Day05 qualified as D5
 import Solutions.Day06 qualified as D6
 import Solutions.Day07 qualified as D7
+import Solutions.Day08 qualified as D8
 
 mains :: [AOC]
 mains = [ D1.solve
@@ -41,6 +42,7 @@ mains = [ D1.solve
         , D5.solve
         , D6.solve
         , D7.solve
+        , D8.solve
         ]
 
 inputFilePrefix :: Text
@@ -97,6 +99,15 @@ main = do
     prettyDate year month day
     pre <- getCurrentTime
     case args of
+        ["all"] -> forM_ mains (\(AOC day p1 p2) -> do
+                        putStrLn $ "==== Day" <> showt day <> " ===="
+                        input <- parseFile $ inputDir <> inputFilePrefix <> showt day
+                        pre <- getCurrentTime
+                        putStrLn $ "Part1: " <> showt (p1 input)
+                        putStrLn $ "Part2: " <> showt (p2 input)
+                        putStr "    "
+                        timePost pre
+                        putStrLn "")
         [inputDay'] -> do
             let inputDay = pack inputDay'
             dayNumber <- parseDay inputDay
