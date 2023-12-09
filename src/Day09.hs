@@ -12,11 +12,5 @@ step f xs
 sol :: ([Int] -> Int) -> ([Int] -> Int) -> Text -> Int
 sol f g = sum . map ((f . step g) . map read . words . Text.unpack) . Text.lines
 
-p1 :: Text -> Int
-p1 = sol sum last
-
-p2 :: Text -> Int
-p2 = sol diffr head
-
 solve :: AOC
-solve = AOC 9 p1 p2
+solve = AOC 9 (sol sum last) (sol diffr head)
