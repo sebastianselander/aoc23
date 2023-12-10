@@ -44,8 +44,6 @@ module Lude (
     freqs,
     fixed,
     byOrder,
-    diffl,
-    diffr,
     Parser,
     Text,
 )
@@ -145,12 +143,6 @@ fixed :: (Eq a) => (a -> a) -> a -> a
 fixed f !x = if x == y then x else fixed f y
   where
     y = f x
-
-diffl :: (Foldable f, Num a) => f a -> a
-diffl = foldl' (-) 0
-
-diffr :: (Foldable f, Num a) => f a -> a
-diffr = foldr (-) 0
 
 data Rect = Rect
     { xCoord :: Int

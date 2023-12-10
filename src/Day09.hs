@@ -11,7 +11,9 @@ step f xs
 
 sol :: ([Int] -> [Int]) -> Text -> Int
 sol f =
-    sum . map ((diffr . step head . f) . map read . words . T.unpack) . T.lines
+    sum
+        . map ((foldr (-) 0 . step head . f) . map read . words . T.unpack)
+        . T.lines
 
 solve :: AOC
 solve = AOC 9 (sol reverse) (sol id)
