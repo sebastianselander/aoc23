@@ -45,13 +45,13 @@ sadj m (x, y) =
         ++ bool [] [belowI] below
   where
     leftI = (x - 1, y)
-    left = idx leftI m `elem` ([Just '-', Just 'L', Just 'F'] :: [Maybe Char])
+    left = elem @[] (idx leftI m) [Just '-', Just 'L', Just 'F']
     rightI = (x + 1, y)
-    right = idx rightI m `elem` ([Just '-', Just 'J', Just '7'] :: [Maybe Char])
+    right = elem @[] (idx rightI m) [Just '-', Just 'J', Just '7']
     belowI = (x, y + 1)
-    below = idx belowI m `elem` ([Just 'L', Just 'J', Just '|'] :: [Maybe Char])
+    below = elem @[] (idx belowI m) [Just 'L', Just 'J', Just '|']
     aboveI = (x, y - 1)
-    above = idx aboveI m `elem` ([Just '|', Just '7', Just 'F'] :: [Maybe Char])
+    above = elem @[] (idx aboveI m) [Just '|', Just '7', Just 'F']
 
 idx :: Index -> Matrix Char -> Maybe Char
 idx (x, y) m = do
@@ -96,21 +96,6 @@ marked m = Set.insert startIndex $ snd $ findLoop startIndex m
   where
     startIndex = sIndex m
 
-p1 :: Text -> Int
-p1 = length . fromJust . fst . uncurry findLoop . (sIndex &&& id) . parse
-
-p2 :: Text -> Int
-p2 t =
-    sum
-        . map (flip count 0 . fixW . wall p . sort)
-        . groupBy ((==) `on` snd)
-        . sortOn snd
-        . Set.toList
-        . marked
-        $ p
-  where
-    p = parse t
-
 data Wall = Wall
     { start :: Int
     , startChar :: Char
@@ -128,13 +113,13 @@ count (x : xs) size
         pred ((head xs).start - x.end) + count xs (size + x.size)
     | otherwise = count xs (size + x.size)
 
-fixW :: [Wall] -> [Wall]
-fixW [] = []
-fixW (x : xs)
+reconstruct :: [Wall] -> [Wall]
+reconstruct [] = []
+reconstruct (x : xs)
     | x.startChar == 'L' && x.endChar == 'J'
         || x.startChar == 'F' && x.endChar == '7' =
-        x {size = 2} : fixW xs
-    | otherwise = x : fixW xs
+        x {size = 2} : reconstruct xs
+    | otherwise = x : reconstruct xs
 
 wall :: Matrix Char -> [Index] -> [Wall]
 wall _ [] = []
@@ -153,13 +138,27 @@ wall m (x : xs) = case idx x m of
     findEnd i c [] = (c, i, [])
     findEnd i c (x : xs) = case idx x m of
         Just '|' -> (c, i, x : xs)
-        Just '-' -> findEnd x '-' xs
         Just 'L' -> (c, i, x : xs)
+        Just 'F' -> (c, i, x : xs)
         Just 'J' -> ('J', x, xs)
         Just '7' -> ('7', x, xs)
-        Just 'F' -> (c, i, x : xs)
+        Just '-' -> findEnd x '-' xs
         Just 'S' -> findEnd x 'S' xs
         _ -> undefined
+p1 :: Text -> Int
+p1 = length . fromJust . fst . uncurry findLoop . (sIndex &&& id) . parse
+
+p2 :: Text -> Int
+p2 t =
+    sum
+        . map (flip count 0 . reconstruct . wall p . sort)
+        . groupBy ((==) `on` snd)
+        . sortOn snd
+        . Set.toList
+        . marked
+        $ p
+  where
+    p = parse t
 
 solve :: AOC
 solve = AOC 10 p1 p2
