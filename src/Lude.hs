@@ -178,11 +178,11 @@ onOthers f xs =
     go :: Int -> Seq a -> Seq a -> Seq (Seq b)
     go _ _ Seq.Empty = Seq.Empty
     go n ys (x :<| xs) = go' n x ys :<| go (n + 1) ys xs
-
-    go' :: Int -> a -> Seq a -> Seq b
-    go' _ _ Seq.Empty = Seq.Empty
-    go' 0 e (_ :<| xs) = go' (-1) e xs
-    go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
+      where
+        go' :: Int -> a -> Seq a -> Seq b
+        go' _ _ Seq.Empty = Seq.Empty
+        go' 0 e (_ :<| xs) = go' (-1) e xs
+        go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
 
 pos :: Parser (Int, Int)
 pos =
