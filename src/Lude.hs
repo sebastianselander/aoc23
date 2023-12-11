@@ -84,6 +84,10 @@ import Text.Megaparsec (Parsec)
 import TextShow (TextShow)
 import Unsafe.Coerce
 
+import Text.Megaparsec qualified as P
+import Text.Megaparsec.Char qualified as P
+import Text.Megaparsec.Char.Lexer qualified as L
+
 type Parser = Parsec Void Text
 
 data AOC = forall a b.
@@ -179,6 +183,11 @@ onOthers f xs =
     go' _ _ Seq.Empty = Seq.Empty
     go' 0 e (_ :<| xs) = go' (-1) e xs
     go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
+
+pos :: Parser (Int, Int)
+pos =
+    (pred . P.unPos . P.sourceLine &&& pred . P.unPos . P.sourceColumn)
+        <$> P.getSourcePos
 
 todo :: a
 todo = error "TODO"
