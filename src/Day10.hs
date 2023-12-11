@@ -7,34 +7,19 @@ module Day10 (solve) where
 import Algorithm.Search (bfsM)
 import Control.Monad.State (
     State,
-    evalState,
-    execState,
     get,
-    gets,
     put,
     runState,
  )
-import Data.List.Extra (chunksOf)
 import Data.Set (Set)
 import Data.Set qualified as Set
 import Data.Text qualified as Text
 import Data.Vector (Vector, (!?))
 import Data.Vector qualified as Vec
-import Debug.Trace (trace, traceShowM)
 import Lude
 
-inp, test1, test2, test3, test4, test5, test6 :: Text
-inp = Text.pack $ unsafePerformIO $ readFile "inputs/day10"
-test1 = Text.pack $ unsafePerformIO $ readFile "test/day10_1"
-test2 = Text.pack $ unsafePerformIO $ readFile "test/day10_2"
-test3 = Text.pack $ unsafePerformIO $ readFile "test/day10_3"
-test4 = Text.pack $ unsafePerformIO $ readFile "test/day10_4"
-test5 = Text.pack $ unsafePerformIO $ readFile "test/day10_5"
-test6 = Text.pack $ unsafePerformIO $ readFile "test/day10_last"
-
 type Matrix a = Vector (Vector a)
-type Index = (Int, Int) -- (x,y)
-type St = (Set Index, Index)
+type Index = (Int, Int)
 
 parse :: Text -> Matrix Char
 parse = Vec.fromList . map (Vec.fromList . Text.unpack) . Text.lines
@@ -114,7 +99,8 @@ marked m = Set.insert startIndex $ snd $ findLoop startIndex m
 p1 :: Text -> Int
 p1 = length . fromJust . fst . uncurry findLoop . (sIndex &&& id) . parse
 
-enclosed t =
+p2 :: Text -> Int
+p2 t =
     sum
         . map (flip count 0 . fixW . wall p . sort)
         . groupBy ((==) `on` snd)
@@ -124,17 +110,14 @@ enclosed t =
         $ p
   where
     p = parse t
-test t =
-        groupBy ((==) `on` snd)
-        . sortOn snd
-        . Set.toList
-        . marked
-        $ p
-  where
-    p = parse t
 
-
-data Wall = Wall {start :: Int, startChar :: Char, end :: Int, endChar :: Char, size :: Int}
+data Wall = Wall
+    { start :: Int
+    , startChar :: Char
+    , end :: Int
+    , endChar :: Char
+    , size :: Int
+    }
     deriving (Show)
 
 count :: [Wall] -> Int -> Int
@@ -148,9 +131,8 @@ count (x : xs) size
 fixW :: [Wall] -> [Wall]
 fixW [] = []
 fixW (x : xs)
-    | ( x.startChar == 'L' && x.endChar == 'J'
-            || x.startChar == 'F' && x.endChar == '7'
-      ) =
+    | x.startChar == 'L' && x.endChar == 'J'
+        || x.startChar == 'F' && x.endChar == '7' =
         x {size = 2} : fixW xs
     | otherwise = x : fixW xs
 
@@ -170,40 +152,14 @@ wall m (x : xs) = case idx x m of
     findEnd :: Index -> Char -> [Index] -> (Char, Index, [Index])
     findEnd i c [] = (c, i, [])
     findEnd i c (x : xs) = case idx x m of
-        Just '|' -> (c, i, x:xs)
+        Just '|' -> (c, i, x : xs)
         Just '-' -> findEnd x '-' xs
-        Just 'L' -> (c, i, x:xs)
+        Just 'L' -> (c, i, x : xs)
         Just 'J' -> ('J', x, xs)
         Just '7' -> ('7', x, xs)
-        Just 'F' -> (c, i, x:xs)
+        Just 'F' -> (c, i, x : xs)
         Just 'S' -> findEnd x 'S' xs
         _ -> undefined
 
-cleanUp :: Text -> Matrix Char
-cleanUp t = Vec.fromList $ changeAll 0 p
-  where
-    p = parse t
-    mark = marked p
-    changeAll _ [] = []
-    changeAll y xs
-        | Vec.null xs = []
-        | otherwise = changeRow 0 y (Vec.head xs) : changeAll (y + 1) (Vec.tail xs)
-    changeRow x y xs
-        | null xs = Vec.empty
-        | otherwise =
-            if (x, y) `Set.member` mark
-                then case Vec.head xs of
-                    '|' -> '|' `Vec.cons` changeRow (x + 1) y (Vec.tail xs)
-                    '-' -> '-' `Vec.cons` changeRow (x + 1) y (Vec.tail xs)
-                    'L' -> 'L' `Vec.cons` changeRow (x + 1) y (Vec.tail xs)
-                    'J' -> 'J' `Vec.cons` changeRow (x + 1) y (Vec.tail xs)
-                    '7' -> '7' `Vec.cons` changeRow (x + 1) y (Vec.tail xs)
-                    'F' -> 'F' `Vec.cons` changeRow (x + 1) y (Vec.tail xs)
-                    s -> s `Vec.cons` changeRow (x + 1) y (Vec.tail xs)
-                else '.' `Vec.cons` changeRow (x + 1) y (Vec.tail xs)
-
-p2 :: Text -> Int
-p2 = undefined
-
 solve :: AOC
-solve = AOC 10 p1 id
+solve = AOC 10 p1 p2
