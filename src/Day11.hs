@@ -16,24 +16,22 @@ indices xs =
     , xs !! y !! x == '#' ]
 
 emptys :: [[Char]] -> ([Int], [Int])
-emptys = elemIndices True 
-       . map allSame &&& elemIndices True 
-       . map allSame 
-       . transpose
+emptys =
+  elemIndices True . map allSame &&& elemIndices True . map allSame . transpose
 
-add :: Int -> Int -> [Index] -> [Int] -> [Int] -> [Index]
-add _ _ [] _ _ = []
-add n m ((x, y) : is) rows cols =
-    (x + (n - 1) * r, y + (m - 1) * c) : add n m is rows cols
+expand :: Int -> Int -> [Index] -> [Int] -> [Int] -> [Index]
+expand _ _ [] _ _ = []
+expand n m ((x, y) : is) rows cols =
+    (x + (n - 1) * r, y + (m - 1) * c) : expand n m is rows cols
   where
     r = length $ filter (< x) cols
     c = length $ filter (< y) rows
 
 sol :: Int -> Int -> Text -> Int
-sol n m t =
-    (sum . concat . onOthers manhattan $ add n m (indices p) rows cols) `div` 2
+sol n m t = (sum . concat . onOthers manhattan $ expand n m inds rows cols) `div` 2
   where
     (rows, cols) = emptys p
+    inds = indices p
     p = parse t
 
 p1 :: Text -> Int
