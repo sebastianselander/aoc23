@@ -44,6 +44,8 @@ module Lude (
     freqs,
     fixed,
     byOrder,
+    list,
+    vec,
     Parser,
     Text,
 )
@@ -66,7 +68,7 @@ import Data.Functor
 import Data.Functor.Classes
 import Data.Int
 import Data.Ix
-import Data.List
+import Data.List hiding (map)
 import Data.Map (Map)
 import Data.Map qualified as M
 import Data.Maybe
@@ -83,10 +85,13 @@ import GHC.IO.Unsafe (unsafePerformIO)
 import Text.Megaparsec (Parsec)
 import TextShow (TextShow)
 import Unsafe.Coerce
+import Prelude hiding (map)
 
+import Data.Vector (Vector, (!?))
+import Data.Vector qualified as Vec
 import Text.Megaparsec qualified as P
-import Text.Megaparsec.Char qualified as P
-import Text.Megaparsec.Char.Lexer qualified as L
+import Data.Set (Set)
+import Data.Set qualified as Set
 
 type Parser = Parsec Void Text
 
@@ -107,6 +112,9 @@ instance Show AOC where
 -}
 byOrder :: (Ord a) => [a] -> a -> a -> Ordering
 byOrder xs y z = compare (fromJust $ elemIndex y xs) (fromJust $ elemIndex z xs)
+
+map :: (Functor f) => (a -> b) -> f a -> f b
+map = fmap
 
 slidingWindows :: forall a. Int -> [a] -> [[a]]
 slidingWindows n l = take n <$> tails l
@@ -191,3 +199,14 @@ pos =
 
 todo :: a
 todo = error "TODO"
+
+-- Vector
+
+list :: (Foldable f) => f a -> [a]
+list = toList
+
+vec :: (Foldable f) => f a -> Vector a
+vec = foldr Vec.cons Vec.empty
+
+set :: (Foldable f, Ord a) => f a -> Set a
+set = foldr Set.insert Set.empty

@@ -1,9 +1,12 @@
-import Prelude ((++), pure, length, (==), unlines)
+import Prelude ((++), pure, length, (==))
+:set -w
 
 :set prompt "aoc> "
 
 :def hoogle \s -> pure (":! hoogle --count=15 \"" ++ s ++ "\"")
 
-:def imp \s -> pure (if length s == 1 then ":l Solutions.Day0" ++ s else ":l Solutions.Day" ++ s)
+:def imp \s -> pure (if length s == 1 then ":l Day0" ++ s else ":l Day" ++ s)
 
-:def rr \s -> pure (":cmd pure $ Prelude.unlines [\":r\",\"" ++ fixQuotes s ++ "\"" ++ "]")
+:def pretty \_ -> pure (":set -interactive-print=Text.Pretty.Simple.pPrint")
+:def no-pretty \_ -> pure (":set -interactive-print System.IO.print")
+:set -interactive-print=Text.Pretty.Simple.pPrint

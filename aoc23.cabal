@@ -57,6 +57,7 @@ executable aoc23
     , unordered-containers
     , vector
     , composition
+    , matrix
 
   hs-source-dirs:   src
   default-language: GHC2021
