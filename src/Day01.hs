@@ -2,7 +2,6 @@
 
 module Day01 (solve) where
 
-import Data.Text (Text)
 import Data.Text qualified as T
 import Lude
 import Text.RE.TDFA.Text

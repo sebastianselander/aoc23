@@ -2,7 +2,7 @@ module Day13 (solve) where
 
 import Data.List.Extra (splitOn, (!?))
 import Data.Text (unpack)
-import Lude hiding ((\\))
+import Lude
 
 parse :: Text -> [[String]]
 parse = map lines . splitOn "\n\n" . unpack

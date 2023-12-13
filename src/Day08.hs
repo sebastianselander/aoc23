@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
-
 module Day08 (solve) where
 
 import Data.List.Extra

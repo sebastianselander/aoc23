@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE OverloadedRecordDot #-}
-{-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 module Day10 (solve) where
 
@@ -14,20 +13,18 @@ import Control.Monad.State (
 import Data.Set (Set)
 import Data.Set qualified as Set
 import Data.Text qualified as Text
-import Data.Vector (Vector, (!?))
 import Data.Vector qualified as Vec
 import Lude
 
-type Matrix a = Vector (Vector a)
 type Index = (Int, Int)
 
 parse :: Text -> Matrix Char
 parse = Vec.fromList . map (Vec.fromList . Text.unpack) . Text.lines
 
 sIndex :: Matrix Char -> Index
-sIndex matrix = (x, y)
+sIndex matrix = (l, r)
   where
-    (x, y, _) =
+    (l, r, _) =
         Vec.foldl'
             ( \(x, y, b) z ->
                 case z of
@@ -39,24 +36,19 @@ sIndex matrix = (x, y)
 
 sadj :: Matrix Char -> (Int, Int) -> [(Int, Int)]
 sadj m (x, y) =
-    bool [] [leftI] left
-        ++ bool [] [rightI] right
-        ++ bool [] [aboveI] above
-        ++ bool [] [belowI] below
+    bool [] [leftI] l
+        ++ bool [] [rightI] r
+        ++ bool [] [aboveI] a
+        ++ bool [] [belowI] b
   where
     leftI = (x - 1, y)
-    left = elem @[] (idx leftI m) [Just '-', Just 'L', Just 'F']
+    l = elem @[] (m !!? leftI) [Just '-', Just 'L', Just 'F']
     rightI = (x + 1, y)
-    right = elem @[] (idx rightI m) [Just '-', Just 'J', Just '7']
+    r = elem @[] (m !!? rightI) [Just '-', Just 'J', Just '7']
     belowI = (x, y + 1)
-    below = elem @[] (idx belowI m) [Just 'L', Just 'J', Just '|']
+    b = elem @[] (m !!? belowI) [Just 'L', Just 'J', Just '|']
     aboveI = (x, y - 1)
-    above = elem @[] (idx aboveI m) [Just '|', Just '7', Just 'F']
-
-idx :: Index -> Matrix Char -> Maybe Char
-idx (x, y) m = do
-    v <- m !? y
-    v !? x
+    a = elem @[] (m !!? aboveI) [Just '|', Just '7', Just 'F']
 
 findLoop :: Index -> Matrix Char -> (Maybe [Index], Set Index)
 findLoop startIndex matrix =
@@ -81,7 +73,7 @@ findLoop startIndex matrix =
         pure $ fromMaybe [] (neighb i matrix)
 
     neighb :: Index -> Matrix Char -> Maybe (Set Index)
-    neighb i@(x, y) m = case idx i m of
+    neighb i@(x, y) m = case m !!? i of
         Just '|' -> pure [(x, y - 1), (x, y + 1)]
         Just '-' -> pure [(x - 1, y), (x + 1, y)]
         Just 'L' -> pure [(x, y - 1), (x + 1, y)]
@@ -123,7 +115,7 @@ reconstruct (x : xs)
 
 wall :: Matrix Char -> [Index] -> [Wall]
 wall _ [] = []
-wall m (x : xs) = case idx x m of
+wall m (x : xs) = case m !!? x of
     Just 'L' -> Wall (fst x) 'L' (fst i) c 1 : wall m ys
     Just 'F' -> Wall (fst x) 'F' (fst i) c 1 : wall m ys
     Just '|' -> Wall (fst x) '|' (fst x) '|' 1 : wall m xs
@@ -132,11 +124,11 @@ wall m (x : xs) = case idx x m of
     Just '-' -> error "should not happen"
     _ -> wall m xs
   where
-    char = fromJust $ idx x m
+    char = fromJust $ m !!? x
     (c, i, ys) = findEnd x char xs
     findEnd :: Index -> Char -> [Index] -> (Char, Index, [Index])
-    findEnd i c [] = (c, i, [])
-    findEnd i c (x : xs) = case idx x m of
+    findEnd i' c' [] = (c', i', [])
+    findEnd i c (x : xs) = case m !!? x of
         Just '|' -> (c, i, x : xs)
         Just 'L' -> (c, i, x : xs)
         Just 'F' -> (c, i, x : xs)

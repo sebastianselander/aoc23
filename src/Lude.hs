@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedRecordDot #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 module Lude (
@@ -26,8 +27,8 @@ module Lude (
     module GHC.IO.Unsafe,
     module Unsafe.Coerce,
     Rect (..),
-    overlap,
     AOC (..),
+    overlap,
     opPairs,
     both,
     manhattan,
@@ -48,8 +49,10 @@ module Lude (
     pos,
     safeTail,
     countElem,
+    (!!?),
     Parser,
     Text,
+    Matrix,
 )
 where
 
@@ -77,22 +80,22 @@ import Data.Monoid
 import Data.Ord
 import Data.Sequence (Seq (..))
 import Data.Sequence qualified as Seq
+import Data.Set (Set)
+import Data.Set qualified as Set
 import Data.String
 import Data.Text (Text)
 import Data.Traversable
 import Data.Tuple
+import Data.Vector (Vector, (!?))
+import Data.Vector qualified as Vec
 import Data.Void (Void)
 import GHC.IO.Unsafe (unsafePerformIO)
+import Language.Haskell.TH.Quote
 import Text.Megaparsec (Parsec)
+import Text.Megaparsec qualified as P
 import TextShow (TextShow)
 import Unsafe.Coerce
 import Prelude hiding (map)
-
-import Data.Vector (Vector, (!?))
-import Data.Vector qualified as Vec
-import Text.Megaparsec qualified as P
-import Data.Set (Set)
-import Data.Set qualified as Set
 
 type Parser = Parsec Void Text
 
@@ -206,7 +209,7 @@ todo :: a
 todo = error "TODO"
 
 countElem :: (Foldable f, Eq a) => a -> f a -> Int
-countElem e = foldr (\x acc -> if x == e then acc + 1 else acc) 0 
+countElem e = foldr (\x acc -> if x == e then acc + 1 else acc) 0
 
 -- Vector
 
@@ -218,3 +221,35 @@ vec = foldr Vec.cons Vec.empty
 
 set :: (Foldable f, Ord a) => f a -> Set a
 set = foldr Set.insert Set.empty
+
+type Matrix a = Vector (Vector a)
+
+(!!?) :: Matrix a -> (Int, Int) -> Maybe a
+(!!?) m (x, y) = m !? x >>= (!? y)
+
+-- Matrix must be M x M
+vTranspose :: Matrix a -> Matrix a
+vTranspose m =
+    Vec.fromList
+        [ Vec.fromList
+            [ m Vec.! col Vec.! row
+            | col <- [0 .. maxCol]
+            ]
+        | row <- [0 .. maxRow]
+        ]
+  where
+    maxRow = Vec.length m - 1
+    maxCol = Vec.length (m Vec.! 0) - 1
+
+s :: QuasiQuoter
+s =
+    QuasiQuoter
+        { quoteExp = (\a -> [|fromString a|]) . trim
+        , quotePat = \_ -> fail "illegal raw string QuasiQuote"
+        , quoteType = \_ -> fail "illegal raw string QuasiQuote"
+        , quoteDec = \_ -> fail "illegal raw string QuasiQuote"
+        }
+  where
+    trim :: String -> String
+    trim ('\n' : xs) = xs
+    trim xs = xs
