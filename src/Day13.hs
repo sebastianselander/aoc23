@@ -1,39 +1,33 @@
 module Day13 (solve) where
 
+import Data.List.Extra (splitOn, (!?))
 import Data.Text (unpack)
-import Lude
-import Data.List.Extra ((!?), splitOn)
+import Lude hiding ((\\))
 
-parse :: Text -> [[[Char]]]
+parse :: Text -> [[String]]
 parse = map lines . splitOn "\n\n" . unpack
 
-reflect :: [[Char]] -> Maybe Int
-reflect m = go (length m - 1)
+reflect :: Int -> [String] -> Int
+reflect stop m = go (length m - 1)
   where
-    go 0 = Nothing
-    go n | all and (zipWith (zipWith (==)) l r) = Just n
-         | otherwise = go (n - 1)
+    go 0 = 0
+    go n
+        | countElem False (concat $ zipWith (zipWith (==)) l r) == stop = n
+        | otherwise = go (n - 1)
       where
-        (l, r) = both (mapMaybe (\x -> m !? (x - 1))) $ unzip zipped
-        zipped = along n (n + 1)
+        (l, r) = both (mapMaybe ((m !?) . pred)) $ unzip (along n)
 
-along :: Int -> Int -> [(Int, Int)]
-along 0 m = [(0,m)]
-along n m = (n,m) : along (n - 1) (m + 1)
+along :: Int -> [(Int, Int)]
+along n = zip [n, pred n .. 0] [succ n ..]
 
-run :: [[Char]] -> Int
-run m | res == 0 = 0
-      | otherwise = res
-  where
-    res = fromMaybe 0 x * 100 + fromMaybe 0 y
-    x = reflect m
-    y = reflect (transpose m)
+points :: ([String] -> Int) -> [String] -> Int
+points f = uncurry (+) . ((100*) . f &&& f . transpose)
 
 p1 :: Text -> Int
-p1 = sum . map run . parse
+p1 = sum . map (points (reflect 0)) . parse
 
 p2 :: Text -> Int
-p2 = undefined
+p2 = sum . map (points (reflect 1)) . parse
 
 solve :: AOC
 solve = AOC 13 p1 p2

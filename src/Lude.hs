@@ -47,6 +47,7 @@ module Lude (
     vec,
     pos,
     safeTail,
+    countElem,
     Parser,
     Text,
 )
@@ -203,6 +204,9 @@ safeTail xs = tail xs
 
 todo :: a
 todo = error "TODO"
+
+countElem :: (Foldable f, Eq a) => a -> f a -> Int
+countElem e = foldr (\x acc -> if x == e then acc + 1 else acc) 0 
 
 -- Vector
 
