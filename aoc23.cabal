@@ -36,6 +36,7 @@ executable aoc23
     Day09
     Day10
     Day11
+    Day12
   build-depends:
     , base                  >=4.16
     , algebraic-graphs
@@ -45,7 +46,6 @@ executable aoc23
     , directory
     , extra
     , megaparsec
-    , memoize
     , mtl
     , parser-combinators
     , pretty-simple
@@ -58,6 +58,7 @@ executable aoc23
     , vector
     , composition
     , matrix
+    , monad-memo
 
   hs-source-dirs:   src
   default-language: GHC2021

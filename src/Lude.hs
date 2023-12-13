@@ -25,7 +25,6 @@ module Lude (
     module Data.Tuple,
     module GHC.IO.Unsafe,
     module Unsafe.Coerce,
-    module Data.Function.Memoize,
     Rect (..),
     overlap,
     AOC (..),
@@ -46,6 +45,8 @@ module Lude (
     byOrder,
     list,
     vec,
+    pos,
+    safeTail,
     Parser,
     Text,
 )
@@ -63,7 +64,6 @@ import Data.Char
 import Data.Either
 import Data.Foldable
 import Data.Function
-import Data.Function.Memoize
 import Data.Functor
 import Data.Functor.Classes
 import Data.Int
@@ -196,6 +196,10 @@ pos :: Parser (Int, Int)
 pos =
     (pred . P.unPos . P.sourceLine &&& pred . P.unPos . P.sourceColumn)
         <$> P.getSourcePos
+
+safeTail :: [a] -> [a]
+safeTail [] = []
+safeTail xs = tail xs
 
 todo :: a
 todo = error "TODO"
