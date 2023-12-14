@@ -10,6 +10,7 @@ extra-doc-files: CHANGELOG.md
 common warnings
   ghc-options: -Wall
                -Wextra
+               -Wno-name-shadowing
 
 common extensions
   default-extensions:
@@ -38,6 +39,7 @@ executable aoc23
     Day11
     Day12
     Day13
+    Day14
   build-depends:
     , base                  >=4.16
     , algebraic-graphs
@@ -60,6 +62,8 @@ executable aoc23
     , composition
     , matrix
     , monad-memo
+    , dlist
+    , template-haskell
 
   hs-source-dirs:   src
   default-language: GHC2021

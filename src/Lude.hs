@@ -49,6 +49,7 @@ module Lude (
     pos,
     safeTail,
     countElem,
+    update,
     (!!?),
     Parser,
     Text,
@@ -225,7 +226,14 @@ set = foldr Set.insert Set.empty
 type Matrix a = Vector (Vector a)
 
 (!!?) :: Matrix a -> (Int, Int) -> Maybe a
-(!!?) m (x, y) = m !? x >>= (!? y)
+(!!?) m (x, y) = m !? y >>= (!? x)
+
+update :: Matrix a -> (Int, Int) -> a -> Matrix a
+update matrix (x, y) e =
+    let row = matrix Vec.! y
+        row' = row Vec.// [(x, e)]
+        matrix' = matrix Vec.// [(y, row')]
+     in matrix'
 
 -- Matrix must be M x M
 vTranspose :: Matrix a -> Matrix a
