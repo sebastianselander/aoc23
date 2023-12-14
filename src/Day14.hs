@@ -111,23 +111,25 @@ parse :: Text -> (Int, Int, HashMap (Int, Int) Char)
 parse t = case P.parseMaybe (lineP `P.sepEndBy` P.newline) t of
     Nothing -> error "Failed parsing"
     Just x ->
-        ( width $ concat x
-        , height $ concat x
-        , HM.fromList $ filter ((/= '.') . snd) $ concat x
+        let xs = catMaybes $ concat x
+         in
+        ( width xs
+        , height xs
+        , HM.fromList xs
         )
   where
     height = snd . fst . maximumOn (snd . fst)
     width = fst . fst . maximumOn (fst . fst)
 
-lineP :: Parser [((Int, Int), Char)]
+lineP :: Parser [Maybe ((Int, Int), Char)]
 lineP = P.some $ round <|> cube <|> dot
 
-round :: Parser ((Int, Int), Char)
-round = P.char 'O' *> ((,'O') <$> pos)
+round :: Parser (Maybe ((Int, Int), Char))
+round = P.char 'O' *> (Just . (,'O') <$> pos)
 
-cube :: Parser ((Int, Int), Char)
-cube = P.char '#' *> ((,'#') <$> pos)
+cube :: Parser (Maybe ((Int, Int), Char))
+cube = P.char '#' *> (Just . (,'#') <$> pos)
 
 -- Meh
-dot :: Parser ((Int, Int), Char)
-dot = P.char '.' *> ((,'.') <$> pos)
+dot :: Parser (Maybe ((Int, Int), Char))
+dot = P.char '.' $> Nothing

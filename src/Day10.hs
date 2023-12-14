@@ -14,9 +14,15 @@ import Data.Set (Set)
 import Data.Set qualified as Set
 import Data.Text qualified as Text
 import Data.Vector qualified as Vec
+import Data.Vector (Vector)
 import Lude
 
 type Index = (Int, Int)
+type Matrix a = Vector (Vector a)
+
+(!!?) :: Matrix a -> (Int, Int) -> Maybe a
+(!!?) m (x,y) = m Vec.!? y >>= (Vec.!? x)
+
 
 parse :: Text -> Matrix Char
 parse = Vec.fromList . map (Vec.fromList . Text.unpack) . Text.lines

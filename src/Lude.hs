@@ -49,11 +49,8 @@ module Lude (
     pos,
     safeTail,
     countElem,
-    update,
-    (!!?),
     Parser,
     Text,
-    Matrix,
 )
 where
 
@@ -87,7 +84,7 @@ import Data.String
 import Data.Text (Text)
 import Data.Traversable
 import Data.Tuple
-import Data.Vector (Vector, (!?))
+import Data.Vector (Vector)
 import Data.Vector qualified as Vec
 import Data.Void (Void)
 import GHC.IO.Unsafe (unsafePerformIO)
@@ -223,32 +220,6 @@ vec = foldr Vec.cons Vec.empty
 
 set :: (Foldable f, Ord a) => f a -> Set a
 set = foldr Set.insert Set.empty
-
-type Matrix a = Vector (Vector a)
-
-(!!?) :: Matrix a -> (Int, Int) -> Maybe a
-(!!?) m (x, y) = m !? y >>= (!? x)
-
-update :: Matrix a -> (Int, Int) -> a -> Matrix a
-update matrix (x, y) e =
-    let row = matrix Vec.! y
-        row' = row Vec.// [(x, e)]
-        matrix' = matrix Vec.// [(y, row')]
-     in matrix'
-
--- Matrix must be M x M
-vTranspose :: Matrix a -> Matrix a
-vTranspose m =
-    Vec.fromList
-        [ Vec.fromList
-            [ m Vec.! col Vec.! row
-            | col <- [0 .. maxCol]
-            ]
-        | row <- [0 .. maxRow]
-        ]
-  where
-    maxRow = Vec.length m - 1
-    maxCol = Vec.length (m Vec.! 0) - 1
 
 s :: QuasiQuoter
 s =
