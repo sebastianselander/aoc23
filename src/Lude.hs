@@ -197,9 +197,10 @@ onOthers f xs =
         go' 0 e (_ :<| xs) = go' (-1) e xs
         go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
 
+-- Might be buggy
 pos :: Parser (Int, Int)
 pos =
-    (pred . P.unPos . P.sourceLine &&& pred . P.unPos . P.sourceColumn)
+    (pred . pred . P.unPos . P.sourceColumn &&& pred . P.unPos . P.sourceLine)
         <$> P.getSourcePos
 
 safeTail :: [a] -> [a]
