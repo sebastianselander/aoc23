@@ -11,6 +11,7 @@ module Lude (
     module Data.Bits,
     module Data.Bool,
     module Data.Char,
+    module Data.Composition,
     module Data.Either,
     module Data.Function,
     module Data.Functor,
@@ -35,8 +36,9 @@ module Lude (
     onOthers,
     apN,
     todo,
-    listToTuple,
+    toTuple,
     setAt,
+    elemOn,
     pertubations,
     pertubationsBy,
     findIndicesElem,
@@ -63,6 +65,7 @@ import Data.Bifunctor
 import Data.Bits
 import Data.Bool
 import Data.Char
+import Data.Composition
 import Data.Either
 import Data.Foldable
 import Data.Function
@@ -88,12 +91,13 @@ import Data.Vector (Vector)
 import Data.Vector qualified as Vec
 import Data.Void (Void)
 import GHC.IO.Unsafe (unsafePerformIO)
-import Language.Haskell.TH.Quote
 import Text.Megaparsec (Parsec)
 import Text.Megaparsec qualified as P
 import TextShow (TextShow)
 import Unsafe.Coerce
-import Prelude hiding (map)
+import Data.DList (DList)
+import Data.DList qualified as DList
+import Prelude hiding (map, seq)
 
 type Parser = Parsec Void Text
 
@@ -121,14 +125,17 @@ map = fmap
 slidingWindows :: forall a. Int -> [a] -> [[a]]
 slidingWindows n l = take n <$> tails l
 
-listToTuple :: [a] -> (a, a)
-listToTuple [a, b] = (a, b)
-listToTuple _ = error "ERROR: more than two elements"
+toTuple :: forall a f . Foldable f => f a -> (a,a)
+toTuple xs = case toList xs of
+    [l,r] -> (l,r)
+    _     -> error "ERROR: more than two elements"
 
+-- | Returns a map of frequencies of elements
 freqs :: (Foldable f, Ord a) => f a -> Map a Int
-freqs = M.fromListWith (+) . map (,1) . toList
+freqs = M.fromListWith (+) . foldr ((:) . (,1)) mempty
 
--- | Bottoms if the index is out of bounds
+
+-- | Error if the index is out of bounds
 setAt :: Int -> a -> [a] -> [a]
 setAt n x = (\(l, r) -> l ++ x : tail r) . splitAt n
 
@@ -157,6 +164,9 @@ fixed :: (Eq a) => (a -> a) -> a -> a
 fixed f !x = if x == y then x else fixed f y
   where
     y = f x
+
+elemOn :: (Eq b, Foldable f) => (a -> b) -> b -> f a -> Bool
+elemOn f e = foldr ((||) . (==e) . f) False
 
 data Rect = Rect
     { xCoord :: Int
@@ -187,12 +197,12 @@ onOthers f xs =
   where
     go :: Int -> Seq a -> Seq a -> Seq (Seq b)
     go _ _ Seq.Empty = Seq.Empty
-    go n ys (x :<| xs) = go' n x ys :<| go (n + 1) ys xs
+    go n ys (x :<| xs) = go2 n x ys :<| go (n + 1) ys xs
       where
-        go' :: Int -> a -> Seq a -> Seq b
-        go' _ _ Seq.Empty = Seq.Empty
-        go' 0 e (_ :<| xs) = go' (-1) e xs
-        go' n e (x :<| xs) = f e x :<| go' (n - 1) e xs
+        go2 :: Int -> a -> Seq a -> Seq b
+        go2 _ _ Seq.Empty = Seq.Empty
+        go2 0 e (_ :<| xs) = go2 (-1) e xs
+        go2 n e (x :<| xs) = f e x :<| go2 (n - 1) e xs
 
 -- Might be buggy
 pos :: Parser (Int, Int)
@@ -212,6 +222,9 @@ countElem e = foldr (\x acc -> if x == e then acc + 1 else acc) 0
 
 -- Vector
 
+seq :: (Foldable f) => f a -> Seq a
+seq = foldr (Seq.<|) Seq.empty
+
 list :: (Foldable f) => f a -> [a]
 list = toList
 
@@ -220,16 +233,3 @@ vec = foldr Vec.cons Vec.empty
 
 set :: (Foldable f, Ord a) => f a -> Set a
 set = foldr Set.insert Set.empty
-
-s :: QuasiQuoter
-s =
-    QuasiQuoter
-        { quoteExp = (\a -> [|fromString a|]) . trim
-        , quotePat = \_ -> fail "illegal raw string QuasiQuote"
-        , quoteType = \_ -> fail "illegal raw string QuasiQuote"
-        , quoteDec = \_ -> fail "illegal raw string QuasiQuote"
-        }
-  where
-    trim :: String -> String
-    trim ('\n' : xs) = xs
-    trim xs = xs

@@ -40,6 +40,7 @@ executable aoc23
     Day12
     Day13
     Day14
+    Day15
   build-depends:
     , base                  >=4.16
     , algebraic-graphs
@@ -63,7 +64,7 @@ executable aoc23
     , matrix
     , monad-memo
     , dlist
-    , template-haskell
+    , foldl
 
   hs-source-dirs:   src
   default-language: GHC2021
