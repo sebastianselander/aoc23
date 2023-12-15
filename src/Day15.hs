@@ -10,7 +10,7 @@ parse :: Text -> [String]
 parse = splitOn "," . filter (/= '\n') . Text.unpack
 
 hash :: String -> Int
-hash = foldl' (\acc x -> ((acc + fromEnum x) * 17) `mod` 256) 0
+hash = foldl' (\acc x -> ((acc + ord x) * 17) `mod` 256) 0
 
 p1 :: Text -> Int
 p1 = sum . map hash . parse

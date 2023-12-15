@@ -86,7 +86,7 @@ run w h = go 1_000_000_000 []
         -> HashMap (HashMap (Int, Int) Char) Int
         -> HashMap (Int, Int) Char
         -> HashMap (Int, Int) Char
-    go n memo m
+    go n memo !m
         | n < 1 = m
         | otherwise = case memo HM.!? m of
             Just n' | n > (n' - n) -> go (n `mod` (n' - n)) memo m

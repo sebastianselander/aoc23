@@ -1,6 +1,4 @@
 {-# LANGUAGE OverloadedRecordDot #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS_GHC -Wno-name-shadowing #-}
 
 module Lude (
     module Control.Arrow,
@@ -48,6 +46,8 @@ module Lude (
     byOrder,
     list,
     vec,
+    seq,
+    set,
     pos,
     safeTail,
     countElem,
@@ -95,8 +95,6 @@ import Text.Megaparsec (Parsec)
 import Text.Megaparsec qualified as P
 import TextShow (TextShow)
 import Unsafe.Coerce
-import Data.DList (DList)
-import Data.DList qualified as DList
 import Prelude hiding (map, seq)
 
 type Parser = Parsec Void Text
@@ -119,21 +117,17 @@ instance Show AOC where
 byOrder :: (Ord a) => [a] -> a -> a -> Ordering
 byOrder xs y z = compare (fromJust $ elemIndex y xs) (fromJust $ elemIndex z xs)
 
-map :: (Functor f) => (a -> b) -> f a -> f b
-map = fmap
-
 slidingWindows :: forall a. Int -> [a] -> [[a]]
 slidingWindows n l = take n <$> tails l
 
-toTuple :: forall a f . Foldable f => f a -> (a,a)
+toTuple :: forall a f. (Foldable f) => f a -> (a, a)
 toTuple xs = case toList xs of
-    [l,r] -> (l,r)
-    _     -> error "ERROR: more than two elements"
+    [l, r] -> (l, r)
+    _ -> error "ERROR: more than two elements"
 
 -- | Returns a map of frequencies of elements
 freqs :: (Foldable f, Ord a) => f a -> Map a Int
 freqs = M.fromListWith (+) . foldr ((:) . (,1)) mempty
-
 
 -- | Error if the index is out of bounds
 setAt :: Int -> a -> [a] -> [a]
@@ -166,7 +160,7 @@ fixed f !x = if x == y then x else fixed f y
     y = f x
 
 elemOn :: (Eq b, Foldable f) => (a -> b) -> b -> f a -> Bool
-elemOn f e = foldr ((||) . (==e) . f) False
+elemOn f e = foldr ((||) . (== e) . f) False
 
 data Rect = Rect
     { xCoord :: Int
