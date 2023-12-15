@@ -9,7 +9,7 @@ normal = "23456789TJQKA"
 joker = "J23456789TQKA"
 
 parse :: Text -> [(String, Int)]
-parse = map (second read . listToTuple . words . Text.unpack) . Text.lines
+parse = map (second read . toTuple . words . Text.unpack) . Text.lines
 
 order :: String -> Int
 order = go . sort . map length . group . sort

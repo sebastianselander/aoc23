@@ -4,7 +4,7 @@ import Data.Text (unpack)
 import Lude
 
 parse :: Text -> ([Int], [Int])
-parse = listToTuple
+parse = toTuple
       . map (map read . words . dropWhile (not . isDigit))
       . lines
       . unpack

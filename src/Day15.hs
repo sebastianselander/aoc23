@@ -31,12 +31,10 @@ hashmap m xs
     update _ _ = error "unreachable!"
 
 total :: Map Int [(String, Int)] -> [Int]
-total m = map (go m) $ Map.keys m
+total m = zipWith go (Map.elems m) (Map.keys m)
   where
-    go :: Map Int [(String, Int)] -> Int -> Int
-    go m key = case Map.lookup key m of
-        Nothing -> 0
-        Just xs -> go2 (key + 1) 1 xs
+    go :: [(String, Int)] -> Int -> Int
+    go xs key = go2 (key + 1) 1 xs
       where
         go2 _ _ [] = 0
         go2 n m ((_, r) : xs) = n * m * r + go2 n (m + 1) xs
