@@ -12,7 +12,7 @@ import System.Directory
 import System.Environment
 import System.Exit
 import System.IO hiding (hPutStrLn, putStr, putStrLn, readFile)
-import Text.Read (readMaybe, get)
+import Text.Read (readMaybe)
 import TextShow
 import Prelude hiding (
     concat,
@@ -40,6 +40,7 @@ import Day12 qualified as D12
 import Day13 qualified as D13
 import Day14 qualified as D14
 import Day15 qualified as D15
+import Day16 qualified as D16
 
 mains :: [AOC]
 mains = [ D1.solve
@@ -57,6 +58,7 @@ mains = [ D1.solve
         , D13.solve
         , D14.solve
         , D15.solve
+        , D16.solve
         ]
 
 inputFilePrefix :: Text
