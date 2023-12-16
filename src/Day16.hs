@@ -1,7 +1,7 @@
 module Day16 (solve) where
 
 import Control.Monad.State (State, execState, get, put)
-import Data.Matrix
+import Data.Matrix (Matrix, fromLists, ncols, nrows, (!))
 import Data.Set (Set)
 import Data.Set qualified as Set
 import Data.Text qualified as Text
@@ -16,12 +16,13 @@ data Direction = Up | Down | Left | Right
 type Cache = Set (Direction, Int, Int)
 
 convert :: Char -> Tile
-convert '.' = Empty
-convert '/' = ForwardSlash
-convert '\\' = BackwardSlash
-convert '-' = Dash
-convert '|' = Pipe
-convert _ = error "invalid char"
+convert = \case
+    '.' -> Empty
+    '/' -> ForwardSlash
+    '\\' -> BackwardSlash
+    '-' -> Dash
+    '|' -> Pipe
+    _ -> error "invalid char"
 
 parse :: Text -> Matrix Tile
 parse = fromLists . map (map convert . Text.unpack) . Text.lines
@@ -38,54 +39,52 @@ stripDirection = Set.map (\(_, b, c) -> (b, c))
 (.!) :: Matrix a -> (Int, Int) -> a
 (.!) m (x, y) = m ! (y, x)
 
-walk :: (Int, Int) -> Direction -> State (Matrix Tile, Cache) ()
-walk (x, y) dir = do
+walk :: (Int, Int, Direction) -> State (Matrix Tile, Cache) ()
+walk (x, y, direction) = do
     (grid, cache) <- get
     if
         | x > nrows grid || y > ncols grid || x < 1 || y < 1 -> pure ()
-        | seen cache dir (x, y) -> pure ()
+        | seen cache direction (x, y) -> pure ()
         | otherwise -> do
-            put (grid, add dir (x, y) cache)
-            case dir of
+            put (grid, add direction (x, y) cache)
+            case direction of
                 Up -> case grid .! (x, y) of
-                    ForwardSlash -> walk (x + 1, y) Right
-                    BackwardSlash -> walk (x - 1, y) Left
-                    Dash ->
-                        (<>)
-                            <$> walk (x + 1, y) Right
-                            <*> walk (x - 1, y) Left
-                    _ -> walk (x, y - 1) Up
+                    ForwardSlash -> walk right
+                    BackwardSlash -> walk left
+                    Dash -> (<>) <$> walk right <*> walk left
+                    _ -> walk up
                 Down -> case grid .! (x, y) of
-                    ForwardSlash -> walk (x - 1, y) Left
-                    BackwardSlash -> walk (x + 1, y) Right
-                    Dash ->
-                        (<>)
-                            <$> walk (x + 1, y) Right
-                            <*> walk (x - 1, y) Left
-                    _ -> walk (x, y + 1) Down
+                    ForwardSlash -> walk left
+                    BackwardSlash -> walk right
+                    Dash -> (<>) <$> walk right <*> walk left
+                    _ -> walk down
                 Right -> case grid .! (x, y) of
-                    ForwardSlash -> walk (x, y - 1) Up
-                    BackwardSlash -> walk (x, y + 1) Down
-                    Pipe ->
-                        (<>)
-                            <$> walk (x, y - 1) Up
-                            <*> walk (x, y + 1) Down
-                    _ -> walk (x + 1, y) Right
+                    ForwardSlash -> walk up
+                    BackwardSlash -> walk down
+                    Pipe -> (<>) <$> walk up <*> walk down
+                    _ -> walk right
                 Left -> case grid .! (x, y) of
-                    ForwardSlash -> walk (x, y + 1) Down
-                    BackwardSlash -> walk (x, y - 1) Up
-                    Pipe ->
-                        (<>)
-                            <$> walk (x, y - 1) Up
-                            <*> walk (x, y + 1) Down
-                    _ -> walk (x - 1, y) Left
+                    ForwardSlash -> walk down
+                    BackwardSlash -> walk up
+                    Pipe -> (<>) <$> walk up <*> walk down
+                    _ -> walk left
+  where
+    up = newPos Up (x, y)
+    down = newPos Down (x, y)
+    left = newPos Left (x, y)
+    right = newPos Right (x, y)
+    newPos d (x, y) = case d of
+        Up -> (x, y - 1, Up)
+        Down -> (x, y + 1, Down)
+        Right -> (x + 1, y, Right)
+        Left -> (x - 1, y, Left)
 
 p1 :: Text -> Int
 p1 =
     length
         . stripDirection
         . snd
-        . execState (walk (1, 1) Right)
+        . execState (walk (1, 1, Right))
         . (,mempty)
         . parse
 
@@ -101,18 +100,17 @@ starts m =
 
 p2 :: Text -> Int
 p2 t =
-    maximum $
-        map
+    maximum
+        $ map
             ( length
                 . stripDirection
                 . snd
                 . flip execState (p, mempty)
-                . \(a, b, c) -> walk (a, b) c
+                . walk
             )
-            (starts p)
+        $ starts p
   where
     p = parse t
 
---
 solve :: AOC
 solve = AOC 16 p1 p2
