@@ -51,12 +51,12 @@ walk (x, y, direction) = do
                 Up -> case grid .! (x, y) of
                     ForwardSlash -> walk right
                     BackwardSlash -> walk left
-                    Dash -> (<>) <$> walk right <*> walk left
+                    Dash -> (<>) <$> walk left <*> walk right
                     _ -> walk up
                 Down -> case grid .! (x, y) of
                     ForwardSlash -> walk left
                     BackwardSlash -> walk right
-                    Dash -> (<>) <$> walk right <*> walk left
+                    Dash -> (<>) <$> walk left <*> walk right
                     _ -> walk down
                 Right -> case grid .! (x, y) of
                     ForwardSlash -> walk up
