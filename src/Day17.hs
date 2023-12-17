@@ -6,9 +6,9 @@ import Data.Text (unpack)
 import Lude
 
 data Direction = North | West | South | East | Whatever
-    deriving (Eq, Ord)
+    deriving (Eq, Ord, Show)
 
-type State = (Int, Int, Int, Direction)
+type S = (Int, Int, Int, Direction) -- Row, Col, Steps, Direction
 
 inverse :: Direction -> Direction
 inverse = \case
@@ -21,41 +21,40 @@ inverse = \case
 parse :: Text -> Matrix Int
 parse = fromLists . map (map digitToInt) . lines . unpack
 
-pathCost
-    :: ((Int, Int) -> State -> [State])
+path
+    :: ((Int, Int) -> S -> [S])
     -> Matrix Int
-    -> Maybe (Int, [State])
-pathCost f m = aStar (f endPoint) cost manh end start
+    -> Maybe (Int, [S])
+path f m = aStar (f endPoint) cost manh end start
   where
     start = (1, 1, 0, Whatever)
     endPoint = (nrows m, ncols m)
-    end (row, col, _, _) = (row, col) == endPoint
-    manh (row, col, _, _) = manhattan (row, col) endPoint
-    cost _ (row, col, _, _) = getElem row col m
+    end (row, col, _, _) =  (row, col) == endPoint
+    manh (row, col, _, _) =  manhattan (row, col) endPoint
+    cost _ (row, col, _, _) =  getElem row col m
 
-neighbors :: Int -> Int -> (Int, Int) -> State -> [State]
-neighbors max min (rowBound, colBound) (row, col, step, dir) =
-    [ x
-    | x@(row', col', step', dir') <-
-        [ (row + 1, col, bool 0 (succ step `upto` max) (dir == South), South)
-        , (row - 1, col, bool 0 (succ step `upto` max) (dir == North), North)
-        , (row, col - 1, bool 0 (succ step `upto` max) (dir == West), West)
-        , (row, col + 1, bool 0 (succ step `upto` max) (dir == East), East)
+neighbors :: Int -> Int -> (Int, Int) -> S -> [S]
+neighbors max min (rowBound, colBound) (!row, !col, !step, !dir) =
+        [ s
+        | s@(row', col', step', dir') <-
+            [ (row + 1, col, g South, South)
+            , (row - 1, col, g North, North)
+            , (row, col - 1, g West, West)
+            , (row, col + 1, g East, East)
+            ]
+        , (dir /= dir' || step' < max) && dir' /= inverse dir
+        , row' >= 1 && row' <= rowBound && col' >= 1 && col' <= colBound
+        , not (step < (min - 1) && dir /= Whatever) || (dir == dir')
         ]
-    , (dir /= dir' || step' < max) && dir' /= inverse dir
-    , row' >= 1 && row' <= rowBound && col' >= 1 && col' <= colBound
-    , not (step < (min - 1) && dir /= Whatever) || (dir == dir')
-    ]
   where
     upto n m = n `mod` (m + 1)
+    g dir' = bool 0 (succ step `upto` max) (dir == dir')
 
--- ~ 4 seconds
 p1 :: Text -> Int
-p1 = fst . fromJust . pathCost (neighbors 3 1) . parse
+p1 = fst . fromJust . path (neighbors 3 1) . parse
 
--- ~ 19 seconds
 p2 :: Text -> Int
-p2 = fst . fromJust . pathCost (neighbors 10 4) . parse
+p2 = fst . fromJust . path (neighbors 10 4) . parse
 
 solve :: AOC
 solve = AOC 17 p1 p2

@@ -19,6 +19,7 @@ common extensions
     OverloadedStrings
     TypeApplications
     MultiWayIf
+    ParallelListComp
 
 executable aoc23
   import:           warnings,
