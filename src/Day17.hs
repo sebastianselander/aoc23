@@ -34,43 +34,20 @@ pathCost f m = aStar (f endPoint) cost manh end start
     cost _ (row, col, _, _) = getElem row col m
 
 neighbors :: Int -> Int -> (Int, Int) -> State -> [State]
-neighbors max min (rowBound, colBound) (row, col, step, dir)
-    | step < (min - 1) && dir /= Whatever =
-        filter (\(_, _, _, dir') -> dir == dir') all
-    | otherwise = all
+neighbors max min (rowBound, colBound) (row, col, step, dir) =
+    [ x
+    | x@(row', col', step', dir') <-
+        [ (row + 1, col, bool 0 (succ step `upto` max) (dir == South), South)
+        , (row - 1, col, bool 0 (succ step `upto` max) (dir == North), North)
+        , (row, col - 1, bool 0 (succ step `upto` max) (dir == West), West)
+        , (row, col + 1, bool 0 (succ step `upto` max) (dir == East), East)
+        ]
+    , (dir /= dir' || step' < max) && dir' /= inverse dir
+    , row' >= 1 && row' <= rowBound && col' >= 1 && col' <= colBound
+    , not (step < (min - 1) && dir /= Whatever) || (dir == dir')
+    ]
   where
-    all =
-        filter
-            (inside &.& available)
-            [
-                ( row + 1
-                , col
-                , bool 0 (succ step `upto` max) (dir == South)
-                , South
-                )
-            ,
-                ( row - 1
-                , col
-                , bool 0 (succ step `upto` max) (dir == North)
-                , North
-                )
-            ,
-                ( row
-                , col - 1
-                , bool 0 (succ step `upto` max) (dir == West)
-                , West
-                )
-            ,
-                ( row
-                , col + 1
-                , bool 0 (succ step `upto` max) (dir == East)
-                , East
-                )
-            ]
     upto n m = n `mod` (m + 1)
-    inside (x, y, _, _) = x >= 1 && x <= rowBound && y >= 1 && y <= colBound
-    available (_, _, step', dir') =
-        (dir /= dir' || step' < max) && dir' /= inverse dir
 
 -- ~ 4 seconds
 p1 :: Text -> Int
