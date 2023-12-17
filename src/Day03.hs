@@ -14,14 +14,10 @@ parse = map Text.unpack . Text.lines
 
 adj :: (Int, Int) -> [(Int, Int)]
 adj (x, y) =
-    [ (x + 1, y + 1)
-    , (x + 1, y - 1)
-    , (x - 1, y + 1)
-    , (x - 1, y - 1)
-    , (x, y - 1)
-    , (x, y + 1)
-    , (x + 1, y)
-    , (x - 1, y)
+    [ (x', y')
+    | x' <- [x - 1, x, x + 1]
+    , y' <- [y - 1, y, y + 1]
+    , (x', y') /= (x, y)
     ]
 
 look :: [[a]] -> (Int, Int) -> Maybe a
