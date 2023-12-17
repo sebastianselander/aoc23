@@ -1,11 +1,11 @@
 module Day17 (solve) where
 
 import Algorithm.Search (aStar)
-import Data.Matrix hiding (inverse, trace)
+import Data.Matrix (Matrix, fromLists, getElem, ncols, nrows)
 import Data.Text (unpack)
-import Lude hiding (Any)
+import Lude
 
-data Direction = North | West | South | East | Any
+data Direction = North | West | South | East | Whatever
     deriving (Eq, Ord)
 
 type State = (Int, Int, Int, Direction)
@@ -16,10 +16,7 @@ inverse = \case
     South -> North
     West -> East
     East -> West
-    Any -> Any
-
-upto :: Int -> Int -> Int
-upto n m = n `mod` (m + 1)
+    Whatever -> Whatever
 
 parse :: Text -> Matrix Int
 parse = fromLists . map (map digitToInt) . lines . unpack
@@ -30,7 +27,7 @@ pathCost
     -> Maybe (Int, [State])
 pathCost f m = aStar (f endPoint) cost manh end start
   where
-    start = (1, 1, 0, Any)
+    start = (1, 1, 0, Whatever)
     endPoint = (nrows m, ncols m)
     end (row, col, _, _) = (row, col) == endPoint
     manh (row, col, _, _) = manhattan (row, col) endPoint
@@ -70,14 +67,14 @@ neighbs max condition (rowBound, colBound) s@(row, col, step, dir) =
                 , East
                 )
             ]
-    inside (x, y, _, _) =
-        x >= 1 && x <= rowBound && y >= 1 && y <= colBound
+    upto n m = n `mod` (m + 1)
+    inside (x, y, _, _) = x >= 1 && x <= rowBound && y >= 1 && y <= colBound
     available (_, _, step', dir') =
         (dir /= dir' || step' < max) && dir' /= inverse dir
 
 p1Cond, p2Cond :: State -> Bool
 p1Cond = const False
-p2Cond (_, _, step, dir) = step < 3 && dir /= Any
+p2Cond (_, _, step, dir) = step < 3 && dir /= Whatever
 
 -- ~ 4 seconds
 p1 :: Text -> Int
