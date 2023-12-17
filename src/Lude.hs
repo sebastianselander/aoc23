@@ -51,6 +51,7 @@ module Lude (
     pos,
     safeTail,
     countElem,
+    (&.&),
     Parser,
     Text,
 )
@@ -213,6 +214,10 @@ todo = error "TODO"
 
 countElem :: (Foldable f, Eq a) => a -> f a -> Int
 countElem e = foldr (\x acc -> if x == e then acc + 1 else acc) 0
+
+-- | Short circuits on the second argument
+(&.&) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
+(&.&) f g a = g a && f a
 
 -- Vector
 

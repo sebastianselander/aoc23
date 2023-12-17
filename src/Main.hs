@@ -41,6 +41,7 @@ import Day13 qualified as D13
 import Day14 qualified as D14
 import Day15 qualified as D15
 import Day16 qualified as D16
+import Day17 qualified as D17
 
 mains :: [AOC]
 mains = [ D1.solve
@@ -59,6 +60,7 @@ mains = [ D1.solve
         , D14.solve
         , D15.solve
         , D16.solve
+        , D17.solve
         ]
 
 inputFilePrefix :: Text
