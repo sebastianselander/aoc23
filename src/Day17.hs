@@ -33,11 +33,11 @@ pathCost f m = aStar (f endPoint) cost manh end start
     manh (row, col, _, _) = manhattan (row, col) endPoint
     cost _ (row, col, _, _) = getElem row col m
 
-neighbs :: Int -> (State -> Bool) -> (Int, Int) -> State -> [State]
-neighbs max condition (rowBound, colBound) s@(row, col, step, dir) =
-    if condition s
-        then filter (\(_, _, _, dir') -> dir == dir') all
-        else all
+neighbors :: Int -> Int -> (Int, Int) -> State -> [State]
+neighbors max min (rowBound, colBound) (row, col, step, dir)
+    | step < (min - 1) && dir /= Whatever =
+        filter (\(_, _, _, dir') -> dir == dir') all
+    | otherwise = all
   where
     all =
         filter
@@ -72,17 +72,13 @@ neighbs max condition (rowBound, colBound) s@(row, col, step, dir) =
     available (_, _, step', dir') =
         (dir /= dir' || step' < max) && dir' /= inverse dir
 
-p1Cond, p2Cond :: State -> Bool
-p1Cond = const False
-p2Cond (_, _, step, dir) = step < 3 && dir /= Whatever
-
 -- ~ 4 seconds
 p1 :: Text -> Int
-p1 = fst . fromJust . pathCost (neighbs 3 p1Cond) . parse
+p1 = fst . fromJust . pathCost (neighbors 3 1) . parse
 
 -- ~ 19 seconds
 p2 :: Text -> Int
-p2 = fst . fromJust . pathCost (neighbs 10 p2Cond) . parse
+p2 = fst . fromJust . pathCost (neighbors 10 4) . parse
 
 solve :: AOC
 solve = AOC 17 p1 p2
