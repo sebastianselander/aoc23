@@ -44,6 +44,7 @@ executable aoc23
     Day15
     Day16
     Day17
+    Day18
   build-depends:
     , base                  >=4.16
     , algebraic-graphs
