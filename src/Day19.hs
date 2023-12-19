@@ -8,11 +8,7 @@ import Text.Megaparsec qualified as P
 import Text.Megaparsec.Char qualified as P
 import Text.Megaparsec.Char.Lexer qualified as L
 
-data Workflow = WF
-    { name :: String
-    , branches :: [Branch]
-    , els :: String
-    }
+data Workflow = WF { name :: String , branches :: [Branch] , els :: String }
     deriving (Eq, Ord, Show)
 
 data Branch = B
@@ -23,11 +19,7 @@ data Branch = B
     }
     deriving (Eq, Ord, Show)
 
-data Category
-    = X
-    | M
-    | A
-    | S
+data Category = X | M | A | S
     deriving (Eq, Ord, Show)
 
 data Condition
@@ -35,7 +27,7 @@ data Condition
     | GreaterThan
     deriving (Eq, Ord, Show)
 
-type Rating a = (Category, a)
+type Rating = (Category, Int)
 
 lookupWF :: String -> [Workflow] -> Maybe Workflow
 lookupWF _ [] = Nothing
@@ -43,13 +35,13 @@ lookupWF s (x : xs)
     | x.name == s = Just x
     | otherwise = lookupWF s xs
 
-runRating :: Workflow -> [Rating Int] -> String
+runRating :: Workflow -> [Rating] -> String
 runRating (WF _ [] e) _ = e
 runRating (WF nm (b : brs) e) rs = case go b rs of
     Just s -> s
     Nothing -> runRating (WF nm brs e) rs
   where
-    go :: Branch -> [Rating Int] -> Maybe String
+    go :: Branch -> [Rating] -> Maybe String
     go _ [] = Nothing
     go (B cat cond sz jmp) ((cat', n) : rs)
         | cat == cat' && fromCond cond n sz = Just jmp
@@ -59,7 +51,7 @@ runRating (WF nm (b : brs) e) rs = case go b rs of
         fromCond LessThan = (<)
         fromCond GreaterThan = (>)
 
-accepted :: [Workflow] -> [Rating Int] -> Bool
+accepted :: [Workflow] -> [Rating] -> Bool
 accepted wfs ratings = go (fromJust $ lookupWF "in" wfs)
   where
     go wf = case runRating wf ratings of
@@ -103,7 +95,6 @@ step' (B cat cond sz jmp) (XMAS x m a s) =
     filt :: Condition -> IntSet -> (IntSet, IntSet)
     filt LessThan xs = Set.partition (< sz) xs
     filt GreaterThan xs = Set.partition (> sz) xs
-
 
 p1 :: String -> Int
 p1 s =
@@ -163,16 +154,16 @@ workflowP = do
 workflowsP :: Parser [Workflow]
 workflowsP = workflowP `P.sepEndBy` P.newline
 
-ratingP :: Parser (Rating Int)
+ratingP :: Parser Rating
 ratingP = (,) <$> (categoryP <* P.char '=') <*> L.decimal
 
-ratingBlockP :: Parser [Rating Int]
+ratingBlockP :: Parser [Rating]
 ratingBlockP = P.char '{' *> (ratingP `P.sepBy` P.char ',') <* P.char '}'
 
-ratingsP :: Parser [[Rating Int]]
+ratingsP :: Parser [[Rating]]
 ratingsP = ratingBlockP `P.sepEndBy` P.newline
 
-parse :: String -> ([Workflow], [[Rating Int]])
+parse :: String -> ([Workflow], [[Rating]])
 parse s =
     ( fromJust $ P.parseMaybe workflowsP wfs
     , fromJust $ P.parseMaybe ratingsP rs
