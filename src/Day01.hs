@@ -2,26 +2,24 @@
 
 module Day01 (solve) where
 
-import Data.Text qualified as T
 import Lude
-import Text.RE.TDFA.Text
+import Text.RE.TDFA.String
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 =
     sum
         . map
             ( uncurry (+)
                 . ((10 *) . head &&& last)
                 . map digitToInt
-                . T.unpack
-                . T.filter isDigit
+                . filter isDigit
             )
-        . T.lines
+        . lines
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 = p1 . replace
 
-replace :: Text -> Text
+replace :: String -> String
 replace s =
     s
         *=~/ [ed|one///o1e|]

@@ -1,15 +1,14 @@
 module Day07 (solve) where
 
 import Data.List.Extra
-import Data.Text qualified as Text
 import Lude
 
 normal, joker :: String
 normal = "23456789TJQKA"
 joker = "J23456789TQKA"
 
-parse :: Text -> [(String, Int)]
-parse = map (second read . toTuple . words . Text.unpack) . Text.lines
+parse :: String -> [(String, Int)]
+parse = map (second read . toTuple . words) . lines
 
 order :: String -> Int
 order = go . sort . map length . group . sort
@@ -40,14 +39,14 @@ compareHands cr f as bs = case comparing f as bs of
             GT -> GT
             EQ -> go xs ys
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = sum
    . zipWith (*) [1 ..]
    . map snd
    . sortBy (compareHands normal order `on` fst)
    . parse
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 = sum
    . zipWith (*) [1 ..]
    . map snd

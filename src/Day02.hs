@@ -35,7 +35,7 @@ parse =
         )
         <* P.eof
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 =
     sum
         . map (\(Game n _) -> n)
@@ -43,7 +43,7 @@ p1 =
         . fromJust
         . P.parseMaybe parse
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 =
     sum
         . map

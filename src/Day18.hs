@@ -2,28 +2,27 @@ module Day18 (solve) where
 
 import Data.Bifunctor (bimap)
 import Data.List.Extra (dropEnd)
-import Data.Text (unpack)
 import Lude
-import Numeric
+import Numeric (readHex)
 
-parse :: Text -> [(Char, Int, String)]
-parse = map (clean . words) . lines . unpack
+parse :: String -> [(Char, Int, String)]
+parse = map (match . words) . lines
   where
-    clean [a, b, c] = (head a, read b, drop 2 $ dropEnd 1 c)
+    match [a, b, c] = (head a, read b, drop 2 $ dropEnd 1 c)
+    match _ = error "invalid match"
 
 border :: Bool -> [(Char, Int, String)] -> (Int, [(Int, Int)])
 border b xs = go b (0, 0) xs
   where
     go _ _ [] = (0, [])
     go b (row, col) ((char', step', hex) : xs) =
-        let step =
+        let (char, step) =
                 if b
-                    then fst $ head $ readHex (init hex)
-                    else step'
-            char =
-                if b
-                    then digToChar $ last hex
-                    else char'
+                    then
+                        ( digToChar $ last hex
+                        , fst $ head $ readHex (init hex)
+                        )
+                    else (char', step')
          in let ix = case char of
                     'U' -> (row - step, col)
                     'D' -> (row + step, col)
@@ -39,18 +38,18 @@ border b xs = go b (0, 0) xs
         digToChar _ = error "invalid char"
 
 area :: (Int, [(Int, Int)]) -> Int
-area (perim, xs) = (abs (go xs) + perim) `div` 2
+area (perim, xs) = succ ((abs (go xs) + perim) `div` 2)
   where
     (xl, yl) = head xs
     go [] = 0
     go [(xn, yn)] = xn * yl - yn * xl
     go ((x1, y1) : (x2, y2) : xs) = (x1 * y2 - y1 * x2) + go ((x2, y2) : xs)
 
-p1 :: Text -> Int
-p1 = succ . area . border False . parse
+p1 :: String -> Int
+p1 = area . border False . parse
 
-p2 :: Text -> Int
-p2 = succ . area . border True . parse
+p2 :: String -> Int
+p2 = area . border True . parse
 
 solve :: AOC
 solve = AOC 18 p1 p2

@@ -3,16 +3,15 @@ module Day15 (solve) where
 import Data.List.Extra (splitOn)
 import Data.Map (Map)
 import Data.Map qualified as Map
-import Data.Text qualified as Text
 import Lude
 
-parse :: Text -> [String]
-parse = splitOn "," . filter (/= '\n') . Text.unpack
+parse :: String -> [String]
+parse = splitOn "," . filter (/= '\n')
 
 hash :: String -> Int
 hash = foldl' (\acc x -> ((acc + ord x) * 17) `mod` 256) 0
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = sum . map hash . parse
 
 hashmap :: Map Int [(String, Int)] -> String -> Map Int [(String, Int)]
@@ -39,7 +38,7 @@ total m = zipWith go (Map.elems m) (Map.keys m)
         go2 _ _ [] = 0
         go2 n m ((_, r) : xs) = n * m * r + go2 n (m + 1) xs
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 = sum . total . foldl' hashmap mempty . parse
 
 solve :: AOC

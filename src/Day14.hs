@@ -60,7 +60,7 @@ moveAll
     -> HashMap (Int, Int) Char
 moveAll dir width height ixs m = foldl' (\hm -> move width height hm dir) m ixs
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 t = sum . points $ moveAll North w h ixs m
   where
     (w, h, m) = parse t
@@ -92,7 +92,7 @@ run w h = go 1_000_000_000 []
             Just n' | n > (n' - n) -> go (n `mod` (n' - n)) memo m
             _ -> let m' = runCycle w h m in go (n - 1) (HM.insert m n memo) m'
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 t = sum $ points $ run w h m
   where
     (w, h, m) = parse t
@@ -107,7 +107,7 @@ solve = AOC 14 p1 p2
 
 -- Parse
 
-parse :: Text -> (Int, Int, HashMap (Int, Int) Char)
+parse :: String -> (Int, Int, HashMap (Int, Int) Char)
 parse t = case P.parseMaybe (lineP `P.sepEndBy` P.newline) t of
     Nothing -> error "Failed parsing"
     Just x ->

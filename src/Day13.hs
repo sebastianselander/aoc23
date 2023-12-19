@@ -1,11 +1,10 @@
 module Day13 (solve) where
 
 import Data.List.Extra (splitOn, (!?))
-import Data.Text (unpack)
 import Lude
 
-parse :: Text -> [[String]]
-parse = map lines . splitOn "\n\n" . unpack
+parse :: String -> [[String]]
+parse = map lines . splitOn "\n\n"
 
 reflect :: Int -> [String] -> Int
 reflect stop m = go (length m - 1)
@@ -23,10 +22,10 @@ along n = zip [n, pred n .. 0] [succ n ..]
 points :: ([String] -> Int) -> [String] -> Int
 points f = uncurry (+) . ((100*) . f &&& f . transpose)
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = sum . map (points (reflect 0)) . parse
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 = sum . map (points (reflect 1)) . parse
 
 solve :: AOC

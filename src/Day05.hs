@@ -3,7 +3,6 @@
 module Day05 (solve) where
 
 import Data.List.Extra
-import Data.Text (pack, unpack)
 import Lude hiding (inRange)
 
 import Text.Megaparsec qualified as P
@@ -35,15 +34,15 @@ pMap = CM <$> L.decimal <* P.space <*> L.decimal <* P.space <*> L.decimal
 pSeeds :: Parser [Int]
 pSeeds = "seeds: " *> P.some (L.decimal <* P.optional P.space)
 
-pTo :: Text -> Parser [ConversionMap]
+pTo :: String -> Parser [ConversionMap]
 pTo str = do
     _ <- P.string (str <> " map:") <* P.newline
     pMap `P.sepBy` P.newline
 
-parse :: Text -> Almanac
+parse :: String -> Almanac
 parse t = Alm seeds soil fert water light temp humid loc
   where
-    c = map pack $ splitOn "\n\n" (dropEnd 1 $ unpack t)
+    c = splitOn "\n\n" (dropEnd 1 t)
     seeds = fromJust $ P.parseMaybe pSeeds (head c)
     soil = fromJust $ P.parseMaybe (pTo "seed-to-soil") (c !! 1)
     fert = fromJust $ P.parseMaybe (pTo "soil-to-fertilizer") (c !! 2)
@@ -90,7 +89,7 @@ inRange cm m =
     m >= cm.srcRange
         && m <= cm.srcRange + (cm.rangeLen - 1)
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = simulate . parse
 
 -- Part 2
@@ -134,7 +133,7 @@ run2 alm n =
 simulate2 :: Almanac -> Int -> (Bool, Int)
 simulate2 alm n = (isSeed (run2 alm n) alm, n)
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 t = binS 0 0 (simulate2 (parse t))
 
 binS :: Int -> Int -> (Int -> (Bool, Int)) -> Int

@@ -3,13 +3,12 @@ module Day08 (solve) where
 import Data.List.Extra
 import Data.Map (Map, (!))
 import Data.Map qualified as Map
-import Data.Text qualified as Text
 import Lude
 
-parse :: Text -> (String, Map String String)
+parse :: String -> (String, Map String String)
 parse t = (l, Map.fromList $ concatMap lineToTup $ lines r)
   where
-    [l, r] = splitOn "\n\n" $ Text.unpack t
+    [l, r] = splitOn "\n\n" t
     lineToTup :: String -> [(String, String)]
     lineToTup [a, b, c, _, _, _, _, l1, l2, l3, _, _, r1, r2, r3, _] =
         [(['L', a, b, c], [l1, l2, l3]), (['R', a, b, c], [r1, r2, r3])]
@@ -32,12 +31,12 @@ stepsToZ (lr : lrs) m str
   where
     s = m Map.! (lr : str)
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 t = run1 (cycle l) r "AAA"
   where
     (l, r) = parse t
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 t = foldl1' lcm $ map (stepsToZ (cycle l) r) $ endWithA r
   where
     (l, r) = parse t

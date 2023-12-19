@@ -5,12 +5,9 @@ import Lude
 import Data.List.Extra
 import Data.Set (Set)
 import Data.Set qualified as Set
-import Data.Text qualified as Text
+import Data.String qualified as String
 import Text.Megaparsec qualified as P
 import Text.Megaparsec.Char qualified as P
-
-parse :: Text -> [String]
-parse = map Text.unpack . Text.lines
 
 adj :: (Int, Int) -> [(Int, Int)]
 adj (x, y) =
@@ -49,7 +46,7 @@ clump (a : xs)
     | otherwise = clump xs
 clump _ = []
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 x =
     sum
         . map snd
@@ -57,7 +54,7 @@ p1 x =
         . clump
         $ mapMaybe (keep parsed) (indices width height)
   where
-    parsed = parse x
+    parsed = lines x
     width = head (map length parsed)
     height = length parsed
 
@@ -93,12 +90,12 @@ parse2 =
             $> Ignore
         )
 
-runParse2 :: Text -> [[IRep]]
+runParse2 :: String -> [[IRep]]
 runParse2 =
     indexify 0
         . adjust 0
         . map (fromJust . P.parseMaybe parse2)
-        . Text.lines
+        . String.lines
   where
     adjust :: Int -> [[Rep]] -> [[Rep]]
     adjust y (x : xs) = clumpRep 0 y x : adjust (y + 1) xs
@@ -131,7 +128,7 @@ adjStar matrix (x, y) = do
              in fromEnum (length xs == 2) * product xs
         _ -> 0
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 s = sum $ map (adjStar parsed) (indices width height)
   where
     parsed = runParse2 s

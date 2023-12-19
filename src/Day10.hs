@@ -12,7 +12,6 @@ import Control.Monad.State (
  )
 import Data.Set (Set)
 import Data.Set qualified as Set
-import Data.Text qualified as Text
 import Data.Vector qualified as Vec
 import Data.Vector (Vector)
 import Lude
@@ -24,8 +23,8 @@ type Matrix a = Vector (Vector a)
 (!!?) m (x,y) = m Vec.!? y >>= (Vec.!? x)
 
 
-parse :: Text -> Matrix Char
-parse = Vec.fromList . map (Vec.fromList . Text.unpack) . Text.lines
+parse :: String -> Matrix Char
+parse = Vec.fromList . map Vec.fromList . lines
 
 sIndex :: Matrix Char -> Index
 sIndex matrix = (l, r)
@@ -143,10 +142,10 @@ wall m (x : xs) = case m !!? x of
         Just '-' -> findEnd x '-' xs
         Just 'S' -> findEnd x 'S' xs
         _ -> undefined
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = length . fromJust . fst . uncurry findLoop . (sIndex &&& id) . parse
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 t =
     sum
         . map (flip count 0 . reconstruct . wall p . sort)

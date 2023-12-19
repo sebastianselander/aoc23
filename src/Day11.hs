@@ -1,11 +1,7 @@
 module Day11 (solve) where
 
 import Data.List.Extra (allSame)
-import Data.Text qualified as Text
 import Lude
-
-parse :: Text -> [String]
-parse = lines . Text.unpack
 
 type Index = (Int, Int)
 
@@ -27,17 +23,17 @@ expand n m ((x, y) : is) rows cols =
     r = length $ filter (< x) cols
     c = length $ filter (< y) rows
 
-sol :: Int -> Int -> Text -> Int
+sol :: Int -> Int -> String -> Int
 sol n m t = (sum . concat . onOthers manhattan $ expand n m inds rows cols) `div` 2
   where
     (rows, cols) = emptys p
     inds = indices p
-    p = parse t
+    p = lines t
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = sol 2 2
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 = sol 1_000_000 1_000_000
 
 solve :: AOC

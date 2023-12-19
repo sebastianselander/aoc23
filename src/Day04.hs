@@ -8,13 +8,12 @@ import Data.IntMap qualified as M
 import Data.List.Extra
 import Data.Sequence (Seq (..), (><))
 import Data.Sequence qualified as Seq
-import Data.Text qualified as Text
 
 data Card = Card {number :: Int, winning :: [Int], copy :: [Int]}
     deriving (Show)
 
-parse :: Text -> [Card]
-parse = map p . lines . Text.unpack
+parse :: String -> [Card]
+parse = map p . lines
   where
     p :: String -> Card
     p s =
@@ -23,7 +22,7 @@ parse = map p . lines . Text.unpack
             num = read $ filter isDigit l
          in Card num (map read w) (map read m)
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = sum . map go . parse
   where
     go :: Card -> Int
@@ -37,7 +36,7 @@ count (Card n w m) = (n, [succ n .. n + length (w `intersect` m)])
 run :: [Card] -> IntMap (Seq Int)
 run = M.fromList . map count
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 xs = Seq.length $ Seq.fromList (M.keys a) >< go (Seq.fromList $ M.keys a) a
   where
     a = run $ parse xs

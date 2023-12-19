@@ -2,7 +2,6 @@ module Day17 (solve) where
 
 import Algorithm.Search (aStar)
 import Data.Matrix (Matrix, fromLists, getElem, ncols, nrows)
-import Data.Text (unpack)
 import Lude
 
 data Direction = North | West | South | East | Whatever
@@ -18,8 +17,8 @@ inverse = \case
     East -> West
     Whatever -> Whatever
 
-parse :: Text -> Matrix Int
-parse = fromLists . map (map digitToInt) . lines . unpack
+parse :: String -> Matrix Int
+parse = fromLists . map (map digitToInt) . lines
 
 path
     :: ((Int, Int) -> S -> [S])
@@ -50,10 +49,10 @@ neighbors max min (rowBound, colBound) (!row, !col, !step, !dir) =
     upto n m = n `mod` (m + 1)
     g dir' = bool 0 (succ step `upto` max) (dir == dir')
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = fst . fromJust . path (neighbors 3 1) . parse
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 = fst . fromJust . path (neighbors 10 4) . parse
 
 solve :: AOC

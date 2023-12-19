@@ -4,7 +4,6 @@ import Control.Monad.State (State, execState, get, put)
 import Data.Matrix (Matrix, fromLists, ncols, nrows, (!))
 import Data.Set (Set)
 import Data.Set qualified as Set
-import Data.Text qualified as Text
 import Lude hiding (Down, Left, Right)
 import Prelude hiding (Left, Right)
 
@@ -24,8 +23,8 @@ convert = \case
     '|' -> Pipe
     _ -> error "invalid char"
 
-parse :: Text -> Matrix Tile
-parse = fromLists . map (map convert . Text.unpack) . Text.lines
+parse :: String -> Matrix Tile
+parse = fromLists . map (map convert) . lines
 
 seen :: Cache -> Direction -> (Int, Int) -> Bool
 seen cache dir (x, y) = Set.member (dir, x, y) cache
@@ -79,7 +78,7 @@ walk (x, y, direction) = do
         Right -> (x + 1, y, Right)
         Left -> (x - 1, y, Left)
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 =
     length
         . stripDirection
@@ -98,7 +97,7 @@ starts m =
     cols = ncols m
     rows = nrows m
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 t =
     maximum
         $ map

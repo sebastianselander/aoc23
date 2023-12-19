@@ -3,11 +3,10 @@ module Day12 (solve) where
 import Control.Monad.Memo
 import Data.Bifunctor
 import Data.List.Extra (splitOn)
-import Data.Text qualified as Text
 import Lude
 
-parse :: Text -> [(String, [Int])]
-parse = map (f . words) . lines . Text.unpack
+parse :: String -> [(String, [Int])]
+parse = map (f . words) . lines
   where
     f [l, r] = (l, map read $ splitOn "," r)
     f _ = error "parse error"
@@ -42,10 +41,10 @@ countMemo zz@(s : ss) (x : xs) = case s of
     isOk _ = True
     fit ww n = '.' `notElem` ww && length ww == n
 
-p1 :: Text -> Int
+p1 :: String -> Int
 p1 = sum . startEvalMemo . mapM (uncurry countMemo) . parse
 
-p2 :: Text -> Int
+p2 :: String -> Int
 p2 = sum . startEvalMemo . mapM (uncurry countMemo) . fold . parse
 
 solve :: AOC
