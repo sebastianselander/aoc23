@@ -67,16 +67,6 @@ accepted wfs ratings = go (fromJust $ lookupWF "in" wfs)
         "R" -> False
         xs -> go (fromJust $ lookupWF xs wfs)
 
-p1 :: String -> Int
-p1 s =
-    let (wf, rs) = parse s
-     in sum (map snd (concat (filter (accepted wf) rs)))
-
-solve :: AOC
-solve = AOC 19 p1 p2
-
--- Part 2
-
 defaultRange :: IntSet
 defaultRange = Set.fromList [1 .. 4000]
 
@@ -90,10 +80,13 @@ data XMAS = XMAS {x :: IntSet, m :: IntSet, a :: IntSet, s :: IntSet}
     deriving (Show, Eq, Ord)
 
 steps :: [Workflow] -> (String, XMAS) -> [(String, XMAS)]
-steps wfs (label, xmas) = case lookupWF label wfs of
-    Nothing -> [(label, xmas)]
-    Just wf -> concatMap (steps wfs) (step wf xmas)
+steps wfs (label, xmas) =
+    maybe
+        [(label, xmas)]
+        (concatMap (steps wfs) . (`step` xmas))
+        (lookupWF label wfs)
 
+-- Feels like a scanl moment but I haven't figured it out yet
 step :: Workflow -> XMAS -> [(String, XMAS)]
 step (WF _ [] els) xmas = [(els, xmas)]
 step (WF nm (b : brs) els) xmas = case step' b xmas of
@@ -110,6 +103,15 @@ step' (B cat cond sz jmp) (XMAS x m a s) =
     filt :: Condition -> IntSet -> (IntSet, IntSet)
     filt LessThan xs = Set.partition (< sz) xs
     filt GreaterThan xs = Set.partition (> sz) xs
+
+
+p1 :: String -> Int
+p1 s =
+    let (wf, rs) = parse s
+     in sum (map snd (concat (filter (accepted wf) rs)))
+
+solve :: AOC
+solve = AOC 19 p1 p2
 
 p2 :: String -> Int
 p2 =
