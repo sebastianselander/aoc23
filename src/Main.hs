@@ -1,9 +1,5 @@
-{-# LANGUAGE OverloadedRecordDot #-}
-
 module Main where
 
-import Data.Text
-import Data.Text.IO
 import Data.Time.Calendar
 import Data.Time.Clock
 import Lude (AOC (..), forM_)
@@ -11,18 +7,10 @@ import System.Console.ANSI
 import System.Directory
 import System.Environment
 import System.Exit
-import System.IO hiding (hPutStrLn, putStr, putStrLn, readFile)
+import System.IO
 import Text.Read (readMaybe)
 import TextShow
-import Prelude hiding (
-    concat,
-    length,
-    putStr,
-    putStrLn,
-    readFile,
-    replicate,
-    unwords,
- )
+import Prelude
 import Prelude qualified as Prel
 
 import Day01 qualified as D1
@@ -43,6 +31,7 @@ import Day15 qualified as D15
 import Day16 qualified as D16
 import Day17 qualified as D17
 import Day18 qualified as D18
+import Day19 qualified as D19
 
 mains :: [AOC]
 mains = [ D1.solve
@@ -63,29 +52,30 @@ mains = [ D1.solve
         , D16.solve
         , D17.solve
         , D18.solve
+        , D19.solve
         ]
 
-inputFilePrefix :: Text
+inputFilePrefix :: String
 inputFilePrefix = "day"
 
-inputDir :: Text
+inputDir :: String
 inputDir = "inputs/"
 
-makeISO :: Year -> MonthOfYear -> DayOfMonth -> Text
+makeISO :: Year -> MonthOfYear -> DayOfMonth -> String
 makeISO year month day =
-    showt year
+    show year
         <> "-"
-        <> showt month
+        <> show month
         <> "-"
-        <> showt day
+        <> show day
 
 clean :: IO ()
 clean = setCursorPosition 0 0 >> clearScreen
 
 prettyDate :: Year -> MonthOfYear -> DayOfMonth -> IO ()
 prettyDate y m d = do
-    let today :: Text = "Today's date: "
-    let date :: Text = makeISO y m d
+    let today = "Today's date: "
+    let date = makeISO y m d
     putStr today
     setSGR [SetItalicized True]
     putStrLn date
@@ -98,8 +88,8 @@ prettyDate y m d = do
     setSGR [Reset]
     hFlush stdout
 
-titleBar :: Int -> Text
-titleBar n = replicate n "="
+titleBar :: Int -> String
+titleBar n = replicate n '='
 
 data Part = Part1 | Part2
 
@@ -120,16 +110,16 @@ main = do
     pre <- getCurrentTime
     case args of
         ["all"] -> forM_ mains (\(AOC day p1 p2) -> do
-                        putStrLn $ "==== Day" <> showt day <> " ===="
-                        input <- parseFile $ inputDir <> inputFilePrefix <> showt day
+                        putStrLn $ "==== Day" <> show day <> " ===="
+                        input <- parseFile $ inputDir <> inputFilePrefix <> show day
                         pre <- getCurrentTime
-                        putStrLn $ "Part1: " <> showt (p1 input)
-                        putStrLn $ "Part2: " <> showt (p2 input)
+                        putStrLn $ "Part1: " <> show (p1 input)
+                        putStrLn $ "Part2: " <> show (p2 input)
                         putStr "    "
                         timePost pre
                         putStrLn "")
         [inputDay'] -> do
-            let inputDay = pack inputDay'
+            let inputDay = inputDay'
             dayNumber <- parseDay inputDay
             input <- parseFile $ inputDir <> inputFilePrefix <> inputDay
             res1 <- execute dayNumber Part1 mains input
@@ -138,33 +128,33 @@ main = do
             putStrLn $ "Part2: " <> res2
             timePost pre
         [inputDay', inputPart'] -> do
-            let inputDay = pack inputDay'
-            let inputPart = pack inputPart'
+            let inputDay = inputDay'
+            let inputPart = inputPart'
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
             input <- parseFile $ inputDir <> inputFilePrefix <> inputDay
             res <- execute dayNumber partNumber mains input
             putStrLn $
                 "Part"
-                    <> showt partNumber
+                    <> show partNumber
                     <> ": "
                     <> res
             timePost pre
         [inputDay', inputPart', inputFile] -> do
-            let inputDay = pack inputDay'
-            let inputPart = pack inputPart'
+            let inputDay = inputDay'
+            let inputPart = inputPart'
             dayNumber <- parseDay inputDay
             partNumber <- parsePart inputPart
-            input <- parseFile (pack inputFile)
+            input <- parseFile inputFile
             res <- execute dayNumber partNumber mains input
             putStrLn $
                 "Part"
-                    <> showt partNumber
+                    <> show partNumber
                     <> ": "
                     <> res
             timePost pre
         [] -> do
-            input <- parseFile $ inputDir <> inputFilePrefix <> showt day
+            input <- parseFile $ inputDir <> inputFilePrefix <> show day
             res1 <- execute day Part1 mains input
             res2 <- execute day Part2 mains input
             putStrLn $ "Part1: " <> res1
@@ -174,7 +164,7 @@ main = do
             errExit $
                 concat
                     [ "Incorrect amount of arguments: "
-                    , quote $ showt (Prel.length xs)
+                    , quote $ show (Prel.length xs)
                     , "\n\n"
                     , "The program is run by one of the following commands:\n"
                     , quote "cabal run aoc23 -- <DAY> <PART> <INPUTFILE>"
@@ -188,35 +178,35 @@ timePost :: UTCTime -> IO ()
 timePost pre = do
     post <- getCurrentTime
     let diff = diffUTCTime post pre
-    putStrLn $ "\nTook " <> pack (show diff)
+    putStrLn $ "\nTook " <> show diff
 
-execute :: Int -> Part -> [AOC] -> Text -> IO Text
+execute :: Int -> Part -> [AOC] -> String -> IO String
 execute n part xs input = do
     (AOC _ p1 p2) <- find n xs
     case part of
-        Part1 -> pure . showt $ p1 input
-        Part2 -> pure . showt $ p2 input
+        Part1 -> pure . show $ p1 input
+        Part2 -> pure . show $ p2 input
   where
     find :: Int -> [AOC] -> IO AOC
     find _ [] =
-        errExit $ "Program for day " <> quote (showt n) <> " does not exist"
+        errExit $ "Program for day " <> quote (show n) <> " does not exist"
     find m (y : ys)
         | m == day y = pure y
         | otherwise = find m ys
 
-parseFile :: Text -> IO Text
+parseFile :: String -> IO String
 parseFile inputFile =
-    doesFileExist (unpack inputFile) >>= \case
+    doesFileExist inputFile >>= \case
         False ->
             hPutStrLn
                 stderr
                 ("The file " <> quote inputFile <> " does not exist")
                 >> exitFailure
-        True -> readFile $ unpack inputFile
+        True -> readFile inputFile
 
-parseDay :: Text -> IO Int
+parseDay :: String -> IO Int
 parseDay day
-    | Just n <- readMaybe @Int (unpack day)
+    | Just n <- readMaybe @Int day
     , n >= 1 && n <= 25 =
         pure n
     | otherwise =
@@ -227,10 +217,10 @@ parseDay day
                 , "as an integer in the range [1 .. 25]"
                 ]
 
-parsePart :: Text -> IO Part
+parsePart :: String -> IO Part
 parsePart part
-    | Just 1 <- readMaybe @Int (unpack part) = pure Part1
-    | Just 2 <- readMaybe @Int (unpack part) = pure Part2
+    | Just 1 <- readMaybe @Int part = pure Part1
+    | Just 2 <- readMaybe @Int part = pure Part2
     | otherwise = do
         errExit $
             unwords
@@ -239,8 +229,8 @@ parsePart part
                 , "as an integer in the range [1 .. 2]"
                 ]
 
-errExit :: Text -> IO a
+errExit :: String -> IO a
 errExit str = hPutStrLn stderr str >> exitFailure
 
-quote :: Text -> Text
+quote :: String -> String
 quote str = "'" <> str <> "'"

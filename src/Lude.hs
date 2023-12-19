@@ -94,18 +94,17 @@ import Data.Void (Void)
 import GHC.IO.Unsafe (unsafePerformIO)
 import Text.Megaparsec (Parsec)
 import Text.Megaparsec qualified as P
-import TextShow (TextShow)
 import Unsafe.Coerce
 import Prelude hiding (map, seq)
 
-type Parser = Parsec Void Text
+type Parser = Parsec Void String
 
 data AOC = forall a b.
-      (TextShow a, TextShow b) =>
+      (Show a, Show b) =>
     AOC
     { day :: Int
-    , part1 :: Text -> a
-    , part2 :: Text -> b
+    , part1 :: String -> a
+    , part2 :: String -> b
     }
 
 instance Show AOC where
