@@ -73,17 +73,17 @@ addPrevs = do
     go :: [String] -> Map String Module -> Map String Module
     go [] m = m
     go (x : xs) m = case Map.lookup x m of
-        Just (Conjunction tos _) -> go xs (add tos x m)
-        Just (FlipFlop tos _) -> go xs (add tos x m)
+        Just (Conjunction tos _) -> go xs (go2 tos x m)
+        Just (FlipFlop tos _) -> go xs (go2 tos x m)
         Nothing -> error (show x)
         _ -> go xs m
       where
-        add :: [String] -> String -> Map String Module -> Map String Module
-        add [] _ m = m
-        add (x : xs) neighbor m = case Map.lookup x m of
-            Nothing -> add xs neighbor m
+        go2 :: [String] -> String -> Map String Module -> Map String Module
+        go2 [] _ m = m
+        go2 (x : xs) neighbor m = case Map.lookup x m of
+            Nothing -> go2 xs neighbor m
             Just (Conjunction tos nei) ->
-                add
+                go2
                     xs
                     neighbor
                     ( Map.insert
@@ -91,7 +91,7 @@ addPrevs = do
                         (Conjunction tos (Map.insert neighbor Low nei))
                         m
                     )
-            _ -> add xs neighbor m
+            _ -> go2 xs neighbor m
 
 step
     :: String
