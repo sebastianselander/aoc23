@@ -154,7 +154,6 @@ stepsN from to
                 if all (`Map.member` lcms) keys
                     then pure (foldl1 lcm (Map.elems lcms))
                     else stepsN (from + 1) to
-            Nothing -> error (show penultimate)
             _ -> stepsN (from + 1) to
 
 run :: String -> State S a -> (a, S)
@@ -177,7 +176,7 @@ con = do modify (\s -> s {rxCon = go s.modMap})
             Nothing -> error (show x)
 
 p1 :: String -> Int
-p1 s = mul (snd (run s (addPrevs >> con >> stepsN 0 1000)))
+p1 s = mul (snd (run s (addPrevs >> stepsN 0 1000)))
   where
     mul :: S -> Int
     mul s = s.low * s.high
