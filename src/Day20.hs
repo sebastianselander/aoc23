@@ -98,7 +98,6 @@ step
     -> String
     -> Pulse
     -> State S [(Pulse, String, String)]
-step _ "button" pulse = pure [(pulse, "button", "broadcaster")]
 step from to pulse = do
     increment pulse
     lookupModules [to] >>= \case
@@ -123,16 +122,17 @@ step from to pulse = do
             updateModule to (Conjunction tos received)
             rx <- gets presses
             prevs <- gets (snd . rxCon)
-            if
-                | allHigh received -> pure (map (Low,to,) tos)
-                | to `elem` prevs -> do
-                    modify (\s -> s {lcmMap = Map.insert to rx s.lcmMap})
-                    pure (map (Low,to,) tos)
-                | otherwise -> pure (map (High,to,) tos)
+            if allHigh received
+                then pure (map (Low,to,) tos)
+                else do
+                    when
+                        (to `elem` prevs)
+                        (modify (\s -> s {lcmMap = Map.insert to rx s.lcmMap}))
+                    pure (map (High,to,) tos)
         _ -> error "unreachable"
 
 steps :: State S ()
-steps = go [(Low, "", "button")]
+steps = go [(Low, "button", "broadcaster")]
   where
     go :: [(Pulse, String, String)] -> State S ()
     go [] = pure ()
