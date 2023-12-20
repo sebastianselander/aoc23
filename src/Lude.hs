@@ -51,6 +51,7 @@ module Lude (
     pos,
     safeTail,
     countElem,
+    test,
     (&.&),
     Parser,
     Text,
@@ -96,6 +97,10 @@ import Text.Megaparsec (Parsec)
 import Text.Megaparsec qualified as P
 import Unsafe.Coerce
 import Prelude hiding (map, seq)
+
+test :: String
+{-# NOINLINE test #-}
+test = unsafePerformIO $ readFile "test/test"
 
 type Parser = Parsec Void String
 
