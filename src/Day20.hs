@@ -20,7 +20,7 @@ data Module
 
 previous :: Module -> [String]
 previous (Conjunction _ m) = Map.keys m
-previous _                 = []
+previous _ = []
 
 tos :: Module -> [String]
 tos (Broadcaster t) = t
@@ -48,7 +48,8 @@ lookupModules :: [String] -> State S [Module]
 lookupModules xs = gets ((\m -> mapMaybe (`Map.lookup` m) xs) . modMap)
 
 updateModule :: String -> Module -> State S ()
-updateModule str modul = modify (\s -> s {modMap = Map.insert str modul s.modMap})
+updateModule str modul =
+    modify (\s -> s {modMap = Map.insert str modul s.modMap})
 
 parse :: String -> Map String Module
 parse = Map.fromList . map (go . splitOn " -> ") . lines
@@ -82,7 +83,14 @@ addPrevs = do
         add (x : xs) neighbor m = case Map.lookup x m of
             Nothing -> add xs neighbor m
             Just (Conjunction tos nei) ->
-                add xs neighbor (Map.insert x (Conjunction tos (Map.insert neighbor Low nei)) m)
+                add
+                    xs
+                    neighbor
+                    ( Map.insert
+                        x
+                        (Conjunction tos (Map.insert neighbor Low nei))
+                        m
+                    )
             _ -> add xs neighbor m
 
 step
@@ -100,8 +108,16 @@ step from to pulse = do
             High -> pure []
             Low -> do
                 case status of
-                    On -> updateModule to (FlipFlop tos Off) >> pure (map (Low,to,) tos)
-                    Off -> updateModule to (FlipFlop tos On) >> pure (map (High,to,) tos)
+                    On ->
+                        updateModule
+                            to
+                            (FlipFlop tos Off)
+                            >> pure (map (Low,to,) tos)
+                    Off ->
+                        updateModule
+                            to
+                            (FlipFlop tos On)
+                            >> pure (map (High,to,) tos)
         [Conjunction tos received'] -> do
             let received = Map.insert from pulse received'
             updateModule to (Conjunction tos received)
