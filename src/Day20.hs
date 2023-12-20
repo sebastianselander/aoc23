@@ -101,7 +101,6 @@ step
 step from to pulse = do
     increment pulse
     lookupModules [to] >>= \case
-        [] -> pure []
         [Broadcaster tos] -> pure (map (pulse,to,) tos)
         [FlipFlop tos status] -> case pulse of
             High -> pure []
@@ -129,7 +128,7 @@ step from to pulse = do
                         (to `elem` prevs)
                         (modify (\s -> s {lcmMap = Map.insert to rx s.lcmMap}))
                     pure (map (High,to,) tos)
-        _ -> error "unreachable"
+        _ -> pure []
 
 steps :: State S ()
 steps = go [(Low, "button", "broadcaster")]
@@ -169,7 +168,7 @@ con = do modify (\s -> s {rxCon = go s.modMap})
     go :: Map String Module -> (String, [String])
     go m = go2 (Map.keys m)
       where
-        go2 [] = error "Rx not found"
+        go2 [] = error "rx not found"
         go2 (x : xs) = case Map.lookup x m of
             Just modul ->
                 if "rx" `elem` tos modul
