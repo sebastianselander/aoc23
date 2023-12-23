@@ -1,7 +1,7 @@
 module Day13 (solve) where
 
 import Data.List.Extra (splitOn, (!?))
-import Lude
+import Lude hiding ((!?))
 
 parse :: String -> [[String]]
 parse = map lines . splitOn "\n\n"

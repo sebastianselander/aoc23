@@ -1,6 +1,6 @@
 module Day03 where
 
-import Lude
+import Lude hiding ((!?))
 
 import Data.List.Extra
 import Data.Set (Set)

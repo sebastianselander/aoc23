@@ -52,6 +52,11 @@ module Lude (
     safeTail,
     countElem,
     test,
+    (!?),
+    above,
+    left,
+    below,
+    right,
     (&.&),
     Parser,
     Text,
@@ -59,7 +64,7 @@ module Lude (
 where
 
 import Control.Applicative
-import Control.Arrow
+import Control.Arrow hiding (left, right)
 import Control.Monad
 import Control.Monad.Zip
 import Data.Bifoldable
@@ -97,6 +102,7 @@ import Text.Megaparsec (Parsec)
 import Text.Megaparsec qualified as P
 import Unsafe.Coerce
 import Prelude hiding (map, seq)
+import Data.Matrix (Matrix, safeGet)
 
 test :: String
 {-# NOINLINE test #-}
@@ -222,6 +228,16 @@ countElem e = foldr (\x acc -> if x == e then acc + 1 else acc) 0
 -- | Short circuits on the second argument
 (&.&) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
 (&.&) f g a = g a && f a
+
+type Coord = (Int, Int) -- (Row, Col)
+above, below, left, right :: Coord -> Coord
+above (row, col) = (row - 1, col)
+below (row, col) = (row + 1, col)
+left (row, col) = (row, col - 1)
+right (row, col) = (row, col + 1)
+
+(!?) :: Matrix Char -> Coord -> Maybe Char
+(!?) m (row, col) = safeGet row col m
 
 -- Vector
 
