@@ -9,4 +9,3 @@ import Prelude ((++), pure, length, (==))
 
 :def pretty \_ -> pure (":set -interactive-print=Text.Pretty.Simple.pPrint")
 :def no-pretty \_ -> pure (":set -interactive-print System.IO.print")
-:set -interactive-print=Text.Pretty.Simple.pPrint
