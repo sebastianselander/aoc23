@@ -32,6 +32,8 @@
                 pkgs.haskellPackages.ghcid
                 pkgs.haskellPackages.hoogle
                 pkgs.zlib
+                pkgs.blas
+                pkgs.lapack
               ];
             };
         };

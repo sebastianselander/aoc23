@@ -11,6 +11,7 @@ common warnings
   ghc-options: -Wall
                -Wextra
                -Wno-name-shadowing
+               -threaded
 
 common extensions
   default-extensions:
@@ -50,6 +51,8 @@ executable aoc23
     Day21
     Day22
     Day23
+    Day24
+    Day25
   build-depends:
     , base                  >=4.16
     , algebraic-graphs
@@ -75,6 +78,7 @@ executable aoc23
     , dlist
     , foldl
     , parallel
+    , hmatrix
 
   hs-source-dirs:   src
   default-language: GHC2021

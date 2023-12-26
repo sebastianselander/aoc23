@@ -6,6 +6,7 @@ import Data.Set (Set)
 import Data.Set qualified as Set
 import Lude hiding (Down, Left, Right)
 import Prelude hiding (Left, Right)
+import Control.Parallel.Strategies (parMap, rpar)
 
 data Tile = Empty | ForwardSlash | BackwardSlash | Dash | Pipe
 
@@ -100,7 +101,7 @@ starts m =
 p2 :: String -> Int
 p2 t =
     maximum
-        $ map
+        $ parMap rpar
             ( length
                 . stripDirection
                 . snd
